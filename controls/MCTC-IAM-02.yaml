@@ -1,0 +1,38 @@
+control_id: MCTC-IAM-02
+domain: Identity and access
+title: Human Access Uses Central Authentication
+objective: Ensure human access is centrally managed and auditable.
+requirement: Human access to production cloud accounts must use central authentication with MFA. Long-lived unmanaged user access should not be used for normal operations.
+risk: Unmanaged human access makes account recovery, offboarding, and investigation harder.
+evidence_sources:
+  - name: SSO configuration
+    system: Identity provider
+    collection_method: Export authentication settings for production cloud access.
+  - name: MFA enforcement setting
+    system: Identity provider
+    collection_method: Export MFA policy for production access groups.
+  - name: IAM user inventory
+    system: AWS IAM
+    collection_method: Export IAM users and last-used metadata.
+  - name: Access review record
+    system: GRC or ticketing system
+    collection_method: Link the latest quarterly access review.
+test_method: Confirm human access paths use central authentication and identify unmanaged IAM users.
+owner: Security / IT
+review_cadence: Quarterly
+automation_status: Partial
+exception_allowed: true
+exception_requirements:
+  - Break-glass purpose
+  - Restricted permissions
+  - MFA or compensating monitoring
+  - Recurring review
+related_frameworks:
+  - SOC 2 style
+  - ISO 27001 style
+  - CIS style
+tags:
+  - iam
+  - sso
+  - mfa
+  - break-glass

@@ -1,0 +1,38 @@
+control_id: MCTC-EVD-01
+domain: Incident response and evidence handling
+title: Evidence Is Source-Linked And Repeatable
+objective: Make compliance evidence reproducible instead of screenshot-driven.
+requirement: Control evidence should identify the source system, query or collection method, collection date, owner, and reviewer. Manual screenshots should be avoided when source data can be exported or queried.
+risk: Manual evidence collection is hard to repeat, hard to review, and easy to misinterpret.
+evidence_sources:
+  - name: Evidence collection script output
+    system: Local automation or CI/CD platform
+    collection_method: Save command output with timestamp and source query.
+  - name: Query result export
+    system: Source system
+    collection_method: Export CSV, JSON, or report result.
+  - name: Control mapping file
+    system: Control framework repository
+    collection_method: Link control-to-evidence mapping.
+  - name: Reviewer sign-off
+    system: GRC or ticketing system
+    collection_method: Link review record.
+test_method: Select a control sample and confirm evidence can be traced back to its source system and regenerated.
+owner: Security / Compliance / Platform
+review_cadence: Quarterly
+automation_status: Manual sample
+exception_allowed: true
+exception_requirements:
+  - Reason export is unavailable
+  - Manual collection steps
+  - Reviewer
+  - Expiry or re-evaluation date
+related_frameworks:
+  - SOC 2 style
+  - ISO 27001 style
+  - NIST style
+tags:
+  - evidence
+  - audit-readiness
+  - repeatability
+  - source-linking

@@ -1,0 +1,41 @@
+control_id: MCTC-NET-01
+domain: Cloud network exposure
+title: Internet Exposure Is Approved And Documented
+objective: Reduce unintended public exposure of cloud resources.
+requirement: Internet-facing cloud resources must have an approved business purpose, defined owner, and documented exposure path. Public access must be reviewed regularly.
+risk: Unreviewed public exposure can create avoidable attack paths and audit findings.
+evidence_sources:
+  - name: Security group inventory
+    system: AWS EC2
+    collection_method: Export public ingress rules and associated resources.
+  - name: Load balancer inventory
+    system: AWS Elastic Load Balancing
+    collection_method: Export internet-facing load balancers and listeners.
+  - name: Public storage checks
+    system: AWS S3 or AWS Config
+    collection_method: Export public bucket findings.
+  - name: Security findings
+    system: AWS Config or Security Hub
+    collection_method: Export exposure-related findings.
+  - name: Owner approval record
+    system: Ticketing system
+    collection_method: Link approval and business purpose.
+test_method: List internet-exposed resources and confirm owner, purpose, and approved network path.
+owner: Security / Platform / Application team
+review_cadence: Monthly
+automation_status: Partial
+exception_allowed: true
+exception_requirements:
+  - Named owner
+  - Business reason
+  - Expiry date
+  - Compensating monitoring
+related_frameworks:
+  - SOC 2 style
+  - ISO 27001 style
+  - CIS style
+tags:
+  - network
+  - public-exposure
+  - security-groups
+  - ownership

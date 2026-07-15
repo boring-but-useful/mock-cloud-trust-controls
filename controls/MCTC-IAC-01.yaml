@@ -1,0 +1,41 @@
+control_id: MCTC-IAC-01
+domain: Infrastructure as code
+title: Infrastructure Changes Are Reviewed And Versioned
+objective: Make infrastructure changes reviewable and reproducible.
+requirement: Production infrastructure changes must be made through version-controlled infrastructure as code, reviewed before merge, and applied through an approved workflow.
+risk: Unreviewed console changes and unmanaged scripts create drift, weaken auditability, and make recovery harder.
+evidence_sources:
+  - name: Terraform repository
+    system: Source control
+    collection_method: Link repository path and module ownership.
+  - name: Pull request review
+    system: Source control
+    collection_method: Link merged pull request with reviewer approval.
+  - name: CI/CD run
+    system: CI/CD platform
+    collection_method: Link successful workflow run.
+  - name: Terraform plan and apply logs
+    system: CI/CD platform
+    collection_method: Capture plan and apply output references.
+  - name: Drift report
+    system: Infrastructure tooling
+    collection_method: Save latest drift check result.
+test_method: Sample recent infrastructure changes and confirm each has code, review, approval, and deployment evidence.
+owner: Platform
+review_cadence: Monthly
+automation_status: Manual sample
+exception_allowed: true
+exception_requirements:
+  - Emergency change record
+  - Reason normal workflow was bypassed
+  - Post-change review
+  - Backport to code or documented risk acceptance
+related_frameworks:
+  - SOC 2 style
+  - ISO 27001 style
+  - NIST style
+tags:
+  - terraform
+  - change-management
+  - pull-request
+  - drift

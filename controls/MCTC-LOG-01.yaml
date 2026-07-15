@@ -1,0 +1,36 @@
+control_id: MCTC-LOG-01
+domain: Logging and monitoring
+title: Cloud Audit Logs Are Enabled And Retained
+objective: Maintain a reliable audit trail for cloud activity.
+requirement: Production cloud accounts must collect audit logs for administrative and security-relevant events. Logs must be retained long enough to support investigation and compliance review.
+risk: Missing or short-lived audit logs limit incident investigation and make control evidence harder to defend.
+evidence_sources:
+  - name: CloudTrail configuration
+    system: AWS CloudTrail
+    collection_method: Export trail configuration and account coverage.
+  - name: Log bucket retention policy
+    system: AWS S3
+    collection_method: Export lifecycle and object lock configuration where applicable.
+  - name: SIEM ingestion status
+    system: SIEM or logging platform
+    collection_method: Query recent administrative events by account.
+  - name: Sample event query
+    system: SIEM or logging platform
+    collection_method: Save source query and timestamped result.
+test_method: Confirm audit logging is enabled, centralized where expected, protected from casual deletion, and queryable.
+owner: Security / Platform
+review_cadence: Monthly
+automation_status: Partial
+exception_allowed: false
+exception_requirements:
+  - Production exceptions are not allowed.
+  - Temporary ingestion failures require incident or maintenance records.
+related_frameworks:
+  - SOC 2 style
+  - ISO 27001 style
+  - NIST style
+tags:
+  - logging
+  - cloudtrail
+  - retention
+  - siem

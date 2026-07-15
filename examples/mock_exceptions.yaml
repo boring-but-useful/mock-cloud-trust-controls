@@ -1,0 +1,28 @@
+exceptions:
+  - exception_id: EX-IAM-001
+    control_id: MCTC-IAM-02
+    title: Break-glass IAM user retained for recovery testing
+    owner: Security / IT
+    reason: A restricted emergency user is retained for account recovery testing.
+    compensating_control: Credentials are vaulted, MFA is enforced, and use is monitored.
+    approved_by: Security reviewer
+    expires_on: 2026-10-15
+    status: approved
+  - exception_id: EX-NET-001
+    control_id: MCTC-NET-01
+    title: Temporary public endpoint for vendor validation
+    owner: Application team
+    reason: A vendor validation endpoint must remain public during integration testing.
+    compensating_control: Source CIDR is restricted and access logs are reviewed weekly.
+    approved_by: Security reviewer
+    expires_on: 2026-08-15
+    status: approved
+  - exception_id: EX-VULN-001
+    control_id: MCTC-VULN-01
+    title: Medium dependency finding awaiting upstream patch
+    owner: Application team
+    reason: The affected package has no fixed version yet.
+    compensating_control: Feature path is not internet-exposed and runtime monitoring is enabled.
+    approved_by: Security reviewer
+    expires_on: 2026-09-15
+    status: approved

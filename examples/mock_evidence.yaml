@@ -1,0 +1,57 @@
+evidence_items:
+  - evidence_id: EV-IAM-001
+    control_id: MCTC-IAM-01
+    source_system: AWS IAM
+    collection_method: Exported privileged roles and attached policies.
+    collection_date: 2026-07-15
+    owner: Security / Platform
+    status: pass
+    summary: Sample privileged roles have owners, approvals, and current business reasons.
+  - evidence_id: EV-IAM-002
+    control_id: MCTC-IAM-02
+    source_system: Identity provider
+    collection_method: Exported production cloud access groups and MFA policy.
+    collection_date: 2026-07-15
+    owner: Security / IT
+    status: needs_review
+    summary: Central authentication is in place; one break-glass account requires recurring review evidence.
+  - evidence_id: EV-LOG-001
+    control_id: MCTC-LOG-01
+    source_system: AWS CloudTrail
+    collection_method: Exported trail configuration and sampled administrative event query.
+    collection_date: 2026-07-15
+    owner: Security / Platform
+    status: pass
+    summary: Audit logging is enabled and queryable for sampled production accounts.
+  - evidence_id: EV-IAC-001
+    control_id: MCTC-IAC-01
+    source_system: Source control and CI/CD
+    collection_method: Sampled merged pull requests, workflow runs, and Terraform plan output.
+    collection_date: 2026-07-15
+    owner: Platform
+    status: pass
+    summary: Sampled infrastructure changes include code review and deployment evidence.
+  - evidence_id: EV-NET-001
+    control_id: MCTC-NET-01
+    source_system: AWS Config
+    collection_method: Exported internet exposure findings and linked approval records.
+    collection_date: 2026-07-15
+    owner: Security / Platform / Application team
+    status: needs_review
+    summary: Most sampled public exposure has owners; one route requires refreshed approval.
+  - evidence_id: EV-EVD-001
+    control_id: MCTC-EVD-01
+    source_system: Control framework repository
+    collection_method: Reviewed control-to-evidence mapping and generated report output.
+    collection_date: 2026-07-15
+    owner: Security / Compliance / Platform
+    status: pass
+    summary: Sample evidence includes source system, collection method, date, owner, and reviewer path.
+  - evidence_id: EV-VULN-001
+    control_id: MCTC-VULN-01
+    source_system: AWS Security Hub
+    collection_method: Exported vulnerability findings with severity, owner, age, and status.
+    collection_date: 2026-07-15
+    owner: Security / Platform / Application team
+    status: needs_review
+    summary: Critical and high findings are tracked; two medium findings require owner confirmation.

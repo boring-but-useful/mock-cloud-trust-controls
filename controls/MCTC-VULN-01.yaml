@@ -1,0 +1,40 @@
+control_id: MCTC-VULN-01
+domain: Vulnerability and configuration management
+title: Vulnerability Findings Are Triaged And Remediated
+objective: Ensure vulnerability and configuration findings are reviewed, owned, and remediated within defined expectations.
+requirement: Security findings for production cloud resources and software dependencies must be triaged, assigned an owner, tracked to remediation or approved exception, and reviewed on a recurring basis.
+risk: Unowned or aging vulnerability findings increase the chance that known weaknesses remain exploitable and make audit evidence difficult to defend.
+evidence_sources:
+  - name: Security finding export
+    system: AWS Security Hub or vulnerability scanner
+    collection_method: Export open findings with severity, owner, age, and status.
+  - name: Remediation ticket
+    system: Ticketing system
+    collection_method: Link ticket showing owner, due date, and remediation notes.
+  - name: Dependency scan result
+    system: CI/CD or dependency scanner
+    collection_method: Save latest scan result for sampled service.
+  - name: Exception register
+    system: Risk or ticketing system
+    collection_method: Link approved exception with expiry and compensating control.
+test_method: Sample open and recently closed findings and confirm each has severity, owner, status, remediation evidence, or approved exception.
+owner: Security / Platform / Application team
+review_cadence: Monthly
+automation_status: Partial
+exception_allowed: true
+exception_requirements:
+  - Named owner
+  - Risk reason
+  - Expiry date
+  - Compensating control
+  - Reviewer approval
+related_frameworks:
+  - SOC 2 style
+  - ISO 27001 style
+  - CIS style
+  - NIST style
+tags:
+  - vulnerability-management
+  - security-hub
+  - remediation
+  - exceptions
