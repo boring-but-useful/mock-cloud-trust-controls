@@ -23,7 +23,8 @@ Current project state:
 - Python validation script
 - Python Markdown report generator
 - Generated sample report
-- Local git repository on branch `trust-controls`
+- Local git repository on branch `main`
+- GitHub remote configured as `origin`
 
 ## Goals
 
@@ -251,10 +252,26 @@ Job_Search_2026/Portfolio/mock_cloud_trust_controls
 Current branch:
 
 ```text
-trust-controls
+main
 ```
 
-No remote is required for local use. When a GitHub repository exists, set `origin` to the repo URL and push `trust-controls`.
+Default GitHub branch:
+
+```text
+main
+```
+
+Remote:
+
+```text
+origin https://github.com/snycewerk/mock-cloud-trust-controls.git
+```
+
+Normal push target:
+
+```bash
+git push origin main
+```
 
 ## Near-Term Roadmap
 
