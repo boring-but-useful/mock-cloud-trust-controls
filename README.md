@@ -9,6 +9,7 @@ The project starts with readable YAML control definitions, mock evidence, except
 ```text
 mock_cloud_trust_controls/
 ├── README.md
+├── SPEC.md
 ├── catalog.md
 └── controls/
     ├── MCTC-EVD-01.yaml
