@@ -23,6 +23,7 @@ mock_cloud_trust_controls/
 ├── README.md
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
+├── requirements.txt
 ├── catalog.md
 ├── controls/
 │   ├── MCTC-EVD-01.yaml
@@ -37,9 +38,12 @@ mock_cloud_trust_controls/
 │   └── mock_exceptions.yaml
 ├── reports/
 │   └── sample_report.md
-└── scripts/
-    ├── generate_report.py
-    └── validate_controls.py
+├── scripts/
+│   ├── generate_report.py
+│   └── validate_controls.py
+└── tests/
+    ├── test_generate_report.py
+    └── test_validate_controls.py
 ```
 
 ## Control Files
@@ -292,26 +296,25 @@ The report is generated output, but it is intentionally committed for now becaus
 - The schema is deliberately simple so the project can grow without a database or API.
 - The validator is strict enough to catch broken references and missing fields.
 - The report generator assumes validation has already passed.
+- The unittest coverage exercises the command-line scripts against a temporary copy of the project, which keeps tests close to real usage.
 - Framework labels are generic, such as `SOC 2 style` and `ISO 27001 style`, until official mappings are verified.
 
 ## Known Limitations
 
-- There are no unit tests yet.
 - The report generator does not call the validator before generating output.
 - Evidence statuses are not constrained to an enum yet.
 - Exception dates are not checked for expiry yet.
 - There is no CSV output yet.
 - There are no real cloud integrations yet.
-- PyYAML is required, but no `requirements.txt` or virtual environment setup exists yet.
+- There is no separate development requirements file yet.
 
 ## Near-Term Next Steps
 
 Good next engineering slices:
 
-1. Add tests for the validator and report generator.
-2. Add a `requirements.txt` with `PyYAML`.
-3. Add CSV report output.
-4. Add richer mock AWS Config, Security Hub, IAM, CloudTrail, and Terraform evidence.
-5. Add finding severity, finding age, owner, and due-date fields.
-6. Add rollups by domain, owner, status, and exception expiry.
-7. Verify exact framework mappings from primary sources before adding official mappings.
+1. Add CSV report output.
+2. Add richer mock AWS Config, Security Hub, IAM, CloudTrail, and Terraform evidence.
+3. Add finding severity, finding age, owner, and due-date fields.
+4. Add rollups by domain, owner, status, and exception expiry.
+5. Add more negative validation tests as the schema becomes stricter.
+6. Verify exact framework mappings from primary sources before adding official mappings.

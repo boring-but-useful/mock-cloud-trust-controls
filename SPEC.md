@@ -21,8 +21,10 @@ Current project state:
 - 3 mock exception records
 - Markdown control catalog
 - Readable code walkthrough
+- Requirements file for local setup
 - Python validation script
 - Python Markdown report generator
+- Unittest coverage for validation and report generation
 - Generated sample report
 - Local git repository on branch `main`
 - GitHub remote configured as `origin`
@@ -51,6 +53,7 @@ mock_cloud_trust_controls/
 ├── README.md
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
+├── requirements.txt
 ├── catalog.md
 ├── controls/
 │   ├── MCTC-EVD-01.yaml
@@ -65,9 +68,12 @@ mock_cloud_trust_controls/
 │   └── mock_exceptions.yaml
 ├── reports/
 │   └── sample_report.md
-└── scripts/
-    ├── generate_report.py
-    └── validate_controls.py
+├── scripts/
+│   ├── generate_report.py
+│   └── validate_controls.py
+└── tests/
+    ├── test_generate_report.py
+    └── test_validate_controls.py
 ```
 
 ## Control Catalog
@@ -232,7 +238,25 @@ Runtime:
 - Python 3
 - PyYAML
 
-No package manager or virtual environment is currently defined.
+Install dependencies from:
+
+```bash
+python3 -m pip install -r requirements.txt
+```
+
+## Tests
+
+Run from the project root:
+
+```bash
+python3 -m unittest discover -s tests
+```
+
+The tests copy the project into a temporary directory, run the command-line scripts against that copy, and verify:
+
+- validation passes for the current project data
+- validation reports a missing required control field
+- report generation writes the expected Markdown output
 
 ## Public-Safe Rules
 
@@ -266,7 +290,7 @@ main
 Remote:
 
 ```text
-origin https://github.com/snycewerk/mock-cloud-trust-controls.git
+origin https://github.com/boring-but-useful/mock-cloud-trust-controls.git
 ```
 
 Branch policy:
@@ -291,5 +315,5 @@ git push -u origin short-description
 2. Add CSV output for spreadsheet-style review.
 3. Add severity and age fields for vulnerability/configuration findings.
 4. Add report rollups by domain, owner, status, and exception expiry.
-5. Add tests for the validator and report generator.
+5. Add additional negative validation tests as the schema becomes stricter.
 6. Verify official framework references from primary sources before adding exact mappings.

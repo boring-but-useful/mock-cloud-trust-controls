@@ -11,23 +11,27 @@ mock_cloud_trust_controls/
 ├── README.md
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
+├── requirements.txt
 ├── catalog.md
-└── controls/
-    ├── MCTC-EVD-01.yaml
-    ├── MCTC-IAC-01.yaml
-    ├── MCTC-IAM-01.yaml
-    ├── MCTC-IAM-02.yaml
-    ├── MCTC-LOG-01.yaml
-    ├── MCTC-NET-01.yaml
-    └── MCTC-VULN-01.yaml
+├── controls/
+│   ├── MCTC-EVD-01.yaml
+│   ├── MCTC-IAC-01.yaml
+│   ├── MCTC-IAM-01.yaml
+│   ├── MCTC-IAM-02.yaml
+│   ├── MCTC-LOG-01.yaml
+│   ├── MCTC-NET-01.yaml
+│   └── MCTC-VULN-01.yaml
 ├── examples/
 │   ├── mock_evidence.yaml
 │   └── mock_exceptions.yaml
 ├── reports/
 │   └── sample_report.md
-└── scripts/
-    ├── generate_report.py
-    └── validate_controls.py
+├── scripts/
+│   ├── generate_report.py
+│   └── validate_controls.py
+└── tests/
+    ├── test_generate_report.py
+    └── test_validate_controls.py
 ```
 
 ## Control Flow
@@ -51,8 +55,10 @@ control intent -> requirement -> evidence -> test -> exception -> report
 From this directory:
 
 ```bash
+python3 -m pip install -r requirements.txt
 python3 scripts/validate_controls.py
 python3 scripts/generate_report.py
+python3 -m unittest discover -s tests
 ```
 
 The validator checks required fields, duplicate IDs, list fields, evidence samples, and exception references. The report generator writes `reports/sample_report.md`.
