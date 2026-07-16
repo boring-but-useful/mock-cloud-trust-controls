@@ -20,6 +20,7 @@ Current project state:
 - 7 mock evidence records
 - 3 mock exception records
 - Markdown control catalog
+- Readable code walkthrough
 - Python validation script
 - Python Markdown report generator
 - Generated sample report
@@ -49,6 +50,7 @@ Current project state:
 mock_cloud_trust_controls/
 ├── README.md
 ├── SPEC.md
+├── CODE_WALKTHROUGH.md
 ├── catalog.md
 ├── controls/
 │   ├── MCTC-EVD-01.yaml
@@ -267,10 +269,20 @@ Remote:
 origin https://github.com/snycewerk/mock-cloud-trust-controls.git
 ```
 
-Normal push target:
+Branch policy:
+
+- Treat `main` as the default and stable branch.
+- Do not make direct feature changes on `main`.
+- Open pull requests from short-lived branches for documentation, control, data, or script changes.
+- Keep generated report updates in the same pull request as the data or generator change that produced them.
+
+Normal change flow:
 
 ```bash
-git push origin main
+git switch -c short-description
+python3 scripts/validate_controls.py
+python3 scripts/generate_report.py
+git push -u origin short-description
 ```
 
 ## Near-Term Roadmap
