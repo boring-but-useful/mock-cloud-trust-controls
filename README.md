@@ -10,6 +10,7 @@ The project starts with readable YAML control definitions, mock evidence, except
 mock_cloud_trust_controls/
 ├── README.md
 ├── SPEC.md
+├── CODE_WALKTHROUGH.md
 ├── catalog.md
 └── controls/
     ├── MCTC-EVD-01.yaml
