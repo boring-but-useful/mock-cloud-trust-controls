@@ -57,7 +57,7 @@ class ValidateControlsTests(unittest.TestCase):
 
             self.assertEqual(result.returncode, 0)
             self.assertIn("Validated 10 controls", result.stdout)
-            self.assertIn("Validated 13 evidence items", result.stdout)
+            self.assertIn("Validated 17 evidence items", result.stdout)
             self.assertIn("Validated 4 exceptions", result.stdout)
 
     def test_validate_controls_reports_missing_required_field(self) -> None:

@@ -721,6 +721,62 @@
           "source_system": "SIEM or logging platform",
           "status": "pass",
           "summary": "The saved query returned expected administrative events with account, Region, actor, source, and event-time fields available for investigation."
+        },
+        {
+          "collection_date": "2026-09-18",
+          "collection_method": "Exported organization audit configuration and sampled Admin Activity, System Event, Policy Denied, and Data Access settings for critical services.",
+          "control_id": "MCTC-LOG-01",
+          "environment": "production",
+          "evidence_id": "EV-LOG-005",
+          "owner": "Security / Platform",
+          "provider": "gcp",
+          "resource_ref": "gcp://logging/example-google-cloud/audit-config",
+          "scope": "organization/example-google-cloud",
+          "source_system": "Google Cloud Audit Logs",
+          "status": "needs_review",
+          "summary": "Required audit logs are present and Data Access is enabled for designated services, but a newly adopted service lacks inherited DATA_READ coverage and needs owner and cost review."
+        },
+        {
+          "collection_date": "2026-09-18",
+          "collection_method": "Exported organization aggregated-sink scope, filters, exclusions, destination, writer identity, and destination IAM binding.",
+          "control_id": "MCTC-LOG-01",
+          "environment": "production",
+          "evidence_id": "EV-LOG-006",
+          "owner": "Security / Platform",
+          "provider": "gcp",
+          "resource_ref": "gcp://logging/example-google-cloud/sink/central-audit",
+          "scope": "organization/example-google-cloud",
+          "source_system": "Google Cloud Log Router",
+          "status": "pass",
+          "summary": "The non-intercepting organization sink includes child resources, routes all audit-log types to the central project, has no security-log exclusions, and its dedicated writer can reach the destination."
+        },
+        {
+          "collection_date": "2026-09-18",
+          "collection_method": "Exported central log-bucket location, retention period, lock state, encryption setting, and bucket-level IAM access.",
+          "control_id": "MCTC-LOG-01",
+          "environment": "production",
+          "evidence_id": "EV-LOG-007",
+          "owner": "Security / Platform",
+          "provider": "gcp",
+          "resource_ref": "gcp://logging/example-central-logging/bucket/central-audit",
+          "scope": "project/example-central-logging",
+          "source_system": "Google Cloud Logging",
+          "status": "pass",
+          "summary": "The synthetic central bucket uses 365-day locked retention, customer-managed encryption, and restricted viewer access in the designated logging project."
+        },
+        {
+          "collection_date": "2026-09-18",
+          "collection_method": "Reviewed sink entry and error metrics, then ran a timestamped Logs Explorer query against the central audit-log view.",
+          "control_id": "MCTC-LOG-01",
+          "environment": "production",
+          "evidence_id": "EV-LOG-008",
+          "owner": "Security / Platform",
+          "provider": "gcp",
+          "resource_ref": "gcp://monitoring/example-google-cloud/log-router-health",
+          "scope": "organization/example-google-cloud",
+          "source_system": "Google Cloud Logging and Cloud Monitoring",
+          "status": "pass",
+          "summary": "The sampled sink shows routed entries without export errors, and the central query returns expected actor, resource, service, method, and event-time fields."
         }
       ],
       "evidence_owners": [
@@ -728,6 +784,7 @@
       ],
       "evidence_providers": [
         "aws",
+        "gcp",
         "common"
       ],
       "evidence_sources": [
@@ -744,10 +801,28 @@
           "system": "AWS S3"
         },
         {
-          "collection_method": "Export audit-log coverage, routing, exclusions, and retention settings.",
+          "collection_method": "Export organization audit configuration and enabled log types, including Data Access coverage and exemptions.",
           "name": "Cloud Audit Logs configuration",
           "provider": "gcp",
           "system": "Google Cloud Audit Logs"
+        },
+        {
+          "collection_method": "Export sink scope, filters, exclusions, destination, writer identity, and destination permissions.",
+          "name": "Organization aggregated log sink",
+          "provider": "gcp",
+          "system": "Google Cloud Log Router"
+        },
+        {
+          "collection_method": "Export bucket location, retention, lock, encryption, and access settings.",
+          "name": "Central log bucket retention",
+          "provider": "gcp",
+          "system": "Google Cloud Logging"
+        },
+        {
+          "collection_method": "Review export metrics and run a timestamped audit-log query against the central destination.",
+          "name": "Sink health and sample query",
+          "provider": "gcp",
+          "system": "Google Cloud Logging and Cloud Monitoring"
         },
         {
           "collection_method": "Query recent administrative events by account.",
@@ -773,9 +848,7 @@
         "gcp",
         "common"
       ],
-      "missing_evidence_providers": [
-        "gcp"
-      ],
+      "missing_evidence_providers": [],
       "objective": "Maintain a reliable audit trail for cloud activity.",
       "owner": "Security / Platform",
       "related_frameworks": [
@@ -792,7 +865,7 @@
         "retention",
         "siem"
       ],
-      "test_method": "Confirm audit logging is enabled, centralized where expected, protected from casual deletion, and queryable.",
+      "test_method": "Confirm audit logging is enabled, expected log types and resources are covered, routing exclusions are justified, destination permissions work, retention meets policy, and events are queryable.",
       "title": "Cloud Audit Logs Are Enabled And Retained"
     },
     {
@@ -1044,10 +1117,10 @@
     },
     "Security / Platform": {
       "statuses": {
-        "needs_review": 1,
-        "pass": 4
+        "needs_review": 2,
+        "pass": 7
       },
-      "total": 5
+      "total": 9
     },
     "Security / Platform / Application team": {
       "statuses": {
@@ -1072,13 +1145,16 @@
       "total": 6
     },
     "gcp": {
-      "statuses": {},
-      "total": 0
+      "statuses": {
+        "needs_review": 1,
+        "pass": 3
+      },
+      "total": 4
     }
   },
   "evidence_status": {
-    "needs_review": 6,
-    "pass": 7
+    "needs_review": 7,
+    "pass": 10
   },
   "exception_status": {
     "approved": 2,
@@ -1163,17 +1239,6 @@
       "title": "Human Access Uses Central Authentication"
     },
     {
-      "control_id": "MCTC-LOG-01",
-      "evidence_providers": [
-        "aws",
-        "common"
-      ],
-      "missing_providers": [
-        "gcp"
-      ],
-      "title": "Cloud Audit Logs Are Enabled And Retained"
-    },
-    {
       "control_id": "MCTC-NET-01",
       "evidence_providers": [
         "aws"
@@ -1198,7 +1263,7 @@
   "review_warnings": [],
   "summary": {
     "controls_reviewed": 10,
-    "evidence_items": 13,
+    "evidence_items": 17,
     "exceptions": 4
   }
 }

@@ -6,7 +6,7 @@ This report is generated from mock controls, evidence, and exception data. It is
 
 - Review date: 2026-09-18
 - Controls reviewed: 10
-- Evidence items: 13
+- Evidence items: 17
 - Exceptions: 4
 
 ## Review Warnings
@@ -15,8 +15,8 @@ This report is generated from mock controls, evidence, and exception data. It is
 
 ## Evidence Status
 
-- needs_review: 6
-- pass: 7
+- needs_review: 7
+- pass: 10
 
 ## Exception Status
 
@@ -46,7 +46,7 @@ This report is generated from mock controls, evidence, and exception data. It is
 ## Evidence By Provider
 
 - aws: 7 (needs_review: 4, pass: 3)
-- gcp: 0
+- gcp: 4 (needs_review: 1, pass: 3)
 - common: 6 (needs_review: 2, pass: 4)
 
 ## Provider Coverage Gaps
@@ -56,7 +56,6 @@ This report is generated from mock controls, evidence, and exception data. It is
 - MCTC-COST-03: missing gcp, common; current evidence: aws
 - MCTC-IAM-01: missing common; current evidence: aws
 - MCTC-IAM-02: missing aws; current evidence: common
-- MCTC-LOG-01: missing gcp; current evidence: aws, common
 - MCTC-NET-01: missing common; current evidence: aws
 - MCTC-VULN-01: missing common; current evidence: aws
 
@@ -67,7 +66,7 @@ This report is generated from mock controls, evidence, and exception data. It is
 - Platform / Finance / Service owners: 1 (needs_review: 1)
 - Security / Compliance / Platform: 1 (pass: 1)
 - Security / IT: 1 (needs_review: 1)
-- Security / Platform: 5 (needs_review: 1, pass: 4)
+- Security / Platform: 9 (needs_review: 2, pass: 7)
 - Security / Platform / Application team: 2 (needs_review: 2)
 
 ## Control Detail
@@ -214,8 +213,8 @@ Exceptions:
 - Exception allowed: False
 - Objective: Maintain a reliable audit trail for cloud activity.
 - Expected evidence providers: aws, gcp, common
-- Current evidence providers: aws, common
-- Missing evidence providers: gcp
+- Current evidence providers: aws, gcp, common
+- Missing evidence providers: none
 - Evidence owners: Security / Platform
 
 Evidence:
@@ -223,6 +222,10 @@ Evidence:
 - EV-LOG-002 [aws; production; organization/example-cloud] (needs_review): The synthetic archive is private, source-restricted, encrypted, and versioned, but its 180-day lifecycle is shorter than the documented 365-day retention requirement.
 - EV-LOG-003 [common; production; organization/example-cloud] (pass): Sampled management events arrived within the synthetic ingestion objective, with no unexplained account or Region gaps during the review window.
 - EV-LOG-004 [common; production; organization/example-cloud] (pass): The saved query returned expected administrative events with account, Region, actor, source, and event-time fields available for investigation.
+- EV-LOG-005 [gcp; production; organization/example-google-cloud] (needs_review): Required audit logs are present and Data Access is enabled for designated services, but a newly adopted service lacks inherited DATA_READ coverage and needs owner and cost review.
+- EV-LOG-006 [gcp; production; organization/example-google-cloud] (pass): The non-intercepting organization sink includes child resources, routes all audit-log types to the central project, has no security-log exclusions, and its dedicated writer can reach the destination.
+- EV-LOG-007 [gcp; production; project/example-central-logging] (pass): The synthetic central bucket uses 365-day locked retention, customer-managed encryption, and restricted viewer access in the designated logging project.
+- EV-LOG-008 [gcp; production; organization/example-google-cloud] (pass): The sampled sink shows routed entries without export errors, and the central query returns expected actor, resource, service, method, and event-time fields.
 
 Exceptions:
 - No open mock exception.

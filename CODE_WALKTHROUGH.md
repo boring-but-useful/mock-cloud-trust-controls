@@ -194,7 +194,7 @@ Expected output:
 
 ```text
 Validated 10 controls
-Validated 13 evidence items
+Validated 17 evidence items
 Validated 4 exceptions
 ```
 
@@ -335,22 +335,22 @@ Current summary:
 
 ```text
 Controls reviewed: 10
-Evidence items: 13
+Evidence items: 17
 Exceptions: 4
 ```
 
 Current evidence status counts:
 
 ```text
-pass: 7
-needs_review: 6
+pass: 10
+needs_review: 7
 ```
 
 The report is generated output, but it is intentionally committed for now because it shows what the tool produces without requiring someone to run the script first.
 
-## AWS Logging Evidence Example
+## Cloud Logging Evidence Example
 
-`MCTC-LOG-01` uses four records so one passing configuration cannot hide a separate retention or queryability problem:
+The AWS side of `MCTC-LOG-01` uses four records so one passing configuration cannot hide a separate retention or queryability problem:
 
 | Evidence | Provider | Status | Reviewer question |
 |---|---|---|---|
@@ -361,12 +361,33 @@ The report is generated output, but it is intentionally committed for now becaus
 
 The synthetic S3 record intentionally retains logs for 180 days against a 365-day requirement. The framework reports that record as `needs_review`; it does not create an exception because the control explicitly prohibits production logging exceptions.
 
+The matching Google Cloud slice adds four separate review questions:
+
+| Evidence | Provider | Status | Reviewer question |
+|---|---|---|---|
+| Organization audit configuration | GCP | `needs_review` | Are required log types present, and is Data Access enabled for the services and permission types that matter? |
+| Aggregated Log Router sink | GCP | `pass` | Does the organization sink include child resources, preserve intended child routing, avoid unsafe exclusions, and have destination permission? |
+| Central Logging bucket | GCP | `pass` | Does retention meet policy, is the irreversible lock intentional, and are encryption and viewer access appropriate? |
+| Sink health and central query | GCP | `pass` | Are entries routing without export errors, and can a reviewer retrieve useful audit fields? |
+
+The synthetic GCP configuration intentionally leaves `DATA_READ` coverage incomplete for a newly adopted service. Admin Activity and System Event logs are always written, but most Data Access logs must be enabled explicitly and can create material volume and cost. The framework therefore reports the missing coverage as `needs_review` rather than assuming every Data Access category should be enabled globally.
+
+The organization sink is non-intercepting so it creates a central copy without suppressing normal child-resource routing. Its filter and exclusions, unique writer identity, destination permission, and export-error metrics are all evidence—not implementation trivia—because a syntactically valid sink can still drop expected logs.
+
 The AWS baseline follows current official guidance for organization and multi-Region trails, read/write management events, SSE-KMS, log-file validation, protected S3 delivery, and monitoring/queryability:
 
 - [AWS CloudTrail concepts](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html)
 - [AWS CloudTrail data protection](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/data-protection.html)
 - [AWS Security Hub CloudTrail controls](https://docs.aws.amazon.com/securityhub/latest/userguide/cloudtrail-controls.html)
 - [Monitoring CloudTrail with CloudWatch Logs](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/monitor-cloudtrail-log-files-with-cloudwatch-logs.html)
+
+The GCP baseline follows current official guidance for audit-log types, explicit Data Access configuration, aggregated sinks, destination permissions, retention locks, and export health:
+
+- [Cloud Audit Logs overview](https://docs.cloud.google.com/logging/docs/audit)
+- [Cloud Audit Logs best practices](https://docs.cloud.google.com/logging/docs/audit/best-practices)
+- [Aggregated sinks](https://docs.cloud.google.com/logging/docs/export/aggregated_sinks)
+- [Configure log buckets](https://docs.cloud.google.com/logging/docs/buckets)
+- [Troubleshoot routing and storage](https://cloud.google.com/logging/docs/export/troubleshoot)
 
 ## Current Design Choices
 

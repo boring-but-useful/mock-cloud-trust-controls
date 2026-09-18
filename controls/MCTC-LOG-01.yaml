@@ -16,7 +16,19 @@ evidence_sources:
   - name: Cloud Audit Logs configuration
     provider: gcp
     system: Google Cloud Audit Logs
-    collection_method: Export audit-log coverage, routing, exclusions, and retention settings.
+    collection_method: Export organization audit configuration and enabled log types, including Data Access coverage and exemptions.
+  - name: Organization aggregated log sink
+    provider: gcp
+    system: Google Cloud Log Router
+    collection_method: Export sink scope, filters, exclusions, destination, writer identity, and destination permissions.
+  - name: Central log bucket retention
+    provider: gcp
+    system: Google Cloud Logging
+    collection_method: Export bucket location, retention, lock, encryption, and access settings.
+  - name: Sink health and sample query
+    provider: gcp
+    system: Google Cloud Logging and Cloud Monitoring
+    collection_method: Review export metrics and run a timestamped audit-log query against the central destination.
   - name: SIEM ingestion status
     provider: common
     system: SIEM or logging platform
@@ -25,7 +37,7 @@ evidence_sources:
     provider: common
     system: SIEM or logging platform
     collection_method: Save source query and timestamped result.
-test_method: Confirm audit logging is enabled, centralized where expected, protected from casual deletion, and queryable.
+test_method: Confirm audit logging is enabled, expected log types and resources are covered, routing exclusions are justified, destination permissions work, retention meets policy, and events are queryable.
 owner: Security / Platform
 review_cadence: Monthly
 automation_status: Partial
