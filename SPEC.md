@@ -23,7 +23,7 @@ Current project state:
 - Readable code walkthrough
 - Requirements file for local setup
 - Python validation script
-- Python Markdown report generator
+- Python Markdown, CSV, and JSON report generator
 - Unittest coverage for validation and report generation
 - Command-line support for reproducible review dates, strict warnings, and custom report paths
 - Controlled YAML and file-loading errors
@@ -81,6 +81,8 @@ mock_cloud_trust_controls/
 │   ├── mock_evidence.yaml
 │   └── mock_exceptions.yaml
 ├── reports/
+│   ├── sample_report.csv
+│   ├── sample_report.json
 │   └── sample_report.md
 ├── scripts/
 │   ├── generate_report.py
@@ -227,6 +229,8 @@ Run from the project root:
 
 ```bash
 python3 scripts/generate_report.py
+python3 scripts/generate_report.py --format csv
+python3 scripts/generate_report.py --format json
 ```
 
 The generator reads:
@@ -235,13 +239,15 @@ The generator reads:
 - `examples/mock_evidence.yaml`
 - `examples/mock_exceptions.yaml`
 
-It writes:
+The format selects the default output path:
 
 ```text
-reports/sample_report.md
+markdown -> reports/sample_report.md
+csv      -> reports/sample_report.csv
+json     -> reports/sample_report.json
 ```
 
-The output path can be changed with `--output`. Report writes use a temporary file in the destination directory followed by an atomic replacement so failed writes do not truncate the last valid report.
+Markdown is the default. CSV is a flat, one-row-per-control summary designed for spreadsheets. JSON preserves the full nested report data for downstream automation. The output path can be changed with `--output`; `--format` remains authoritative when a custom path is used. Report writes use a temporary file in the destination directory followed by an atomic replacement so failed writes do not truncate the last valid report.
 
 The report includes:
 
@@ -284,6 +290,8 @@ The tests copy the project into a temporary directory, run the command-line scri
 - validation passes for the current project data
 - validation reports a missing required control field
 - report generation writes the expected Markdown output
+- CSV output contains one row per control with linked evidence and exception summaries
+- JSON output preserves summary counts and nested evidence and exceptions
 
 ## Public-Safe Rules
 

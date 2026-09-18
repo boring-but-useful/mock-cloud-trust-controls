@@ -6,7 +6,7 @@ This project is a small control-framework prototype. It has three layers:
 
 1. Structured control definitions in YAML.
 2. Mock evidence and exceptions linked back to those controls.
-3. Python scripts that validate the data and generate a Markdown report.
+3. Python scripts that validate the data and generate Markdown, CSV, or JSON reports.
 
 The intended flow is:
 
@@ -46,6 +46,8 @@ mock_cloud_trust_controls/
 │   ├── mock_evidence.yaml
 │   └── mock_exceptions.yaml
 ├── reports/
+│   ├── sample_report.csv
+│   ├── sample_report.json
 │   └── sample_report.md
 ├── scripts/
 │   ├── generate_report.py
@@ -237,12 +239,16 @@ Run it from the project root:
 
 ```bash
 python3 scripts/generate_report.py
+python3 scripts/generate_report.py --format csv
+python3 scripts/generate_report.py --format json
 ```
 
 Expected output:
 
 ```text
 Wrote reports/sample_report.md
+Wrote reports/sample_report.csv
+Wrote reports/sample_report.json
 ```
 
 ### What It Does
@@ -253,26 +259,30 @@ The generator loads:
 - mock evidence from `examples/mock_evidence.yaml`
 - mock exceptions from `examples/mock_exceptions.yaml`
 
-It groups evidence and exceptions by `control_id`:
+It first builds one validated, format-neutral report model. Evidence and exceptions are grouped by `control_id` and attached to their control before a renderer is selected.
 
 ```python
 evidence_by_control[item.get("control_id", "")].append(item)
 exceptions_by_control[item.get("control_id", "")].append(item)
 ```
 
-It also calculates:
+The shared model also calculates:
 
 - evidence status counts
 - exception status counts
 - control counts by domain
 
-Then it builds a Markdown report as a list of strings and writes:
+The renderer writes one of three committed examples:
 
 ```text
 reports/sample_report.md
+reports/sample_report.csv
+reports/sample_report.json
 ```
 
-The generator validates before loading report data. It writes through a temporary file in the destination directory, flushes it, and atomically replaces the destination. `--output` selects another destination, while `--strict-warnings` prevents report creation when warnings exist.
+Markdown favors human review, CSV provides a flat one-row-per-control spreadsheet view, and JSON retains the full nested structure for software integrations. Keeping rendering separate from report assembly prevents format-specific code from changing validation or business rules.
+
+The generator validates before loading report data. It writes through a temporary file in the destination directory, flushes it, and atomically replaces the destination. `--format` selects the renderer and its default path, `--output` selects another destination, and `--strict-warnings` prevents report creation when warnings exist.
 
 The report includes:
 
@@ -289,10 +299,12 @@ The report includes:
 
 ## Generated Report
 
-The current generated report is:
+The current generated reports are:
 
 ```text
 reports/sample_report.md
+reports/sample_report.csv
+reports/sample_report.json
 ```
 
 Current summary:
@@ -323,12 +335,12 @@ The report is generated output, but it is intentionally committed for now becaus
 
 ## Known Limitations
 
-- There is no CSV output yet.
+- CSV intentionally summarizes one control per row rather than flattening every nested field. JSON is the lossless integration format.
 - There are no real cloud integrations yet.
 - There is no separate development requirements file yet.
 
 ## Roadmap And Current Work
 
-The staged implementation plan and its completion criteria live in [ROADMAP.md](ROADMAP.md). The current engineering slice adds stricter date and status validation, expired-exception handling, and validation before report generation.
+The staged implementation plan and its completion criteria live in [ROADMAP.md](ROADMAP.md). The current engineering slice builds one validated report model and renders it for human review, spreadsheets, and software integrations.
 
 The hardening checkpoint also adds a one-command `make verify` workflow, GitHub Actions verification, exact dependency pinning, weekly Dependabot checks, reproducible date options, strict warning mode, controlled input errors, and atomic report writes.
