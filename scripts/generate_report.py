@@ -6,6 +6,8 @@ from pathlib import Path
 
 import yaml
 
+from validate_controls import validate_project
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 CONTROLS_DIR = PROJECT_ROOT / "controls"
@@ -29,6 +31,13 @@ def load_controls() -> list[dict]:
 
 
 def main() -> int:
+    _, validation_errors = validate_project()
+    if validation_errors:
+        print("Report generation stopped because validation failed:")
+        for error in validation_errors:
+            print(f"- {error}")
+        return 1
+
     controls = load_controls()
     evidence_data = load_yaml(EVIDENCE_FILE)
     exception_data = load_yaml(EXCEPTIONS_FILE)
@@ -45,6 +54,9 @@ def main() -> int:
         exceptions_by_control[item.get("control_id", "")].append(item)
 
     status_counts = Counter(item.get("status", "unknown") for item in evidence_items)
+    exception_status_counts = Counter(
+        item.get("status", "unknown") for item in exception_items
+    )
     domain_counts = Counter(control.get("domain", "Unknown") for control in controls)
 
     lines = [
@@ -64,6 +76,34 @@ def main() -> int:
 
     for status, count in sorted(status_counts.items()):
         lines.append(f"- {status}: {count}")
+
+    lines.extend(["", "## Exception Status", ""])
+    for status, count in sorted(exception_status_counts.items()):
+        lines.append(f"- {status}: {count}")
+
+    lines.extend(["", "## Active Exceptions", ""])
+    active_exceptions = [
+        item for item in exception_items if item.get("status") == "approved"
+    ]
+    for exception in active_exceptions:
+        lines.append(
+            f"- {exception['exception_id']} ({exception['control_id']}, expires "
+            f"{exception['expires_on']}): {exception['title']}"
+        )
+    if not active_exceptions:
+        lines.append("- No active exceptions.")
+
+    lines.extend(["", "## Expired Exceptions", ""])
+    expired_exceptions = [
+        item for item in exception_items if item.get("status") == "expired"
+    ]
+    for exception in expired_exceptions:
+        lines.append(
+            f"- {exception['exception_id']} ({exception['control_id']}, expired "
+            f"{exception['expires_on']}): {exception['title']}"
+        )
+    if not expired_exceptions:
+        lines.append("- No expired exceptions.")
 
     lines.extend(["", "## Controls By Domain", ""])
     for domain, count in sorted(domain_counts.items()):

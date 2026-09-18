@@ -30,6 +30,14 @@ def run_validator(project_root: Path) -> subprocess.CompletedProcess[str]:
     )
 
 
+def load_yaml(path: Path) -> dict:
+    return yaml.safe_load(path.read_text(encoding="utf-8"))
+
+
+def write_yaml(path: Path, data: dict) -> None:
+    path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+
+
 class ValidateControlsTests(unittest.TestCase):
     def test_validate_controls_passes_current_project(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -46,12 +54,9 @@ class ValidateControlsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_copy = copy_project(Path(tmp_dir))
             control_path = project_copy / "controls" / "MCTC-IAM-01.yaml"
-            control = yaml.safe_load(control_path.read_text(encoding="utf-8"))
+            control = load_yaml(control_path)
             del control["owner"]
-            control_path.write_text(
-                yaml.safe_dump(control, sort_keys=False),
-                encoding="utf-8",
-            )
+            write_yaml(control_path, control)
 
             result = run_validator(project_copy)
 
@@ -59,6 +64,82 @@ class ValidateControlsTests(unittest.TestCase):
             self.assertIn("Validation failed:", result.stdout)
             self.assertIn(
                 "MCTC-IAM-01.yaml: missing required field 'owner'",
+                result.stdout,
+            )
+
+    def test_validate_controls_rejects_unknown_evidence_status(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            evidence_path = project_copy / "examples" / "mock_evidence.yaml"
+            evidence = load_yaml(evidence_path)
+            evidence["evidence_items"][0]["status"] = "mostly_passes"
+            write_yaml(evidence_path, evidence)
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("status 'mostly_passes' is not allowed", result.stdout)
+
+    def test_validate_controls_rejects_malformed_date(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            evidence_path = project_copy / "examples" / "mock_evidence.yaml"
+            evidence = load_yaml(evidence_path)
+            evidence["evidence_items"][0]["collection_date"] = "July 15, 2026"
+            write_yaml(evidence_path, evidence)
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "field 'collection_date' must be an ISO date (YYYY-MM-DD)",
+                result.stdout,
+            )
+
+    def test_validate_controls_rejects_invalid_field_type(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            exceptions_path = project_copy / "examples" / "mock_exceptions.yaml"
+            exceptions = load_yaml(exceptions_path)
+            exceptions["exceptions"][0]["owner"] = ["Security", "IT"]
+            write_yaml(exceptions_path, exceptions)
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "exceptions[1] field 'owner' must be str",
+                result.stdout,
+            )
+
+    def test_validate_controls_rejects_approved_expired_exception(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            exceptions_path = project_copy / "examples" / "mock_exceptions.yaml"
+            exceptions = load_yaml(exceptions_path)
+            exceptions["exceptions"][0]["expires_on"] = "2000-01-01"
+            exceptions["exceptions"][0]["status"] = "approved"
+            write_yaml(exceptions_path, exceptions)
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "approved exception expired on 2000-01-01; set status to 'expired'",
+                result.stdout,
+            )
+
+    def test_validate_controls_rejects_invalid_evidence_root(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            evidence_path = project_copy / "examples" / "mock_evidence.yaml"
+            write_yaml(evidence_path, {"evidence_items": {"not": "a list"}})
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "mock_evidence.yaml: 'evidence_items' must be a list",
                 result.stdout,
             )
 

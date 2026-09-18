@@ -13,6 +13,20 @@ This report is generated from mock controls, evidence, and exception data. It is
 - needs_review: 3
 - pass: 4
 
+## Exception Status
+
+- approved: 1
+- expired: 2
+
+## Active Exceptions
+
+- EX-IAM-001 (MCTC-IAM-02, expires 2099-10-15): Break-glass IAM user retained for recovery testing
+
+## Expired Exceptions
+
+- EX-NET-001 (MCTC-NET-01, expired 2026-08-15): Temporary public endpoint for vendor validation
+- EX-VULN-001 (MCTC-VULN-01, expired 2026-09-15): Medium dependency finding awaiting upstream patch
+
 ## Controls By Domain
 
 - Cloud network exposure: 1
@@ -82,7 +96,7 @@ Evidence:
 - EV-IAM-002 (needs_review): Central authentication is in place; one break-glass account requires recurring review evidence.
 
 Exceptions:
-- EX-IAM-001 (approved, expires 2026-10-15): Break-glass IAM user retained for recovery testing
+- EX-IAM-001 (approved, expires 2099-10-15): Break-glass IAM user retained for recovery testing
 
 ### MCTC-LOG-01: Cloud Audit Logs Are Enabled And Retained
 
@@ -112,7 +126,7 @@ Evidence:
 - EV-NET-001 (needs_review): Most sampled public exposure has owners; one route requires refreshed approval.
 
 Exceptions:
-- EX-NET-001 (approved, expires 2026-08-15): Temporary public endpoint for vendor validation
+- EX-NET-001 (expired, expires 2026-08-15): Temporary public endpoint for vendor validation
 
 ### MCTC-VULN-01: Vulnerability Findings Are Triaged And Remediated
 
@@ -127,4 +141,4 @@ Evidence:
 - EV-VULN-001 (needs_review): Critical and high findings are tracked; two medium findings require owner confirmation.
 
 Exceptions:
-- EX-VULN-001 (approved, expires 2026-09-15): Medium dependency finding awaiting upstream patch
+- EX-VULN-001 (expired, expires 2026-09-15): Medium dependency finding awaiting upstream patch

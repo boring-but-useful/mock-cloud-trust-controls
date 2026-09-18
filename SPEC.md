@@ -169,9 +169,10 @@ Each exception requires:
 - `expires_on`
 - `status`
 
-Current exception status:
+Current exception statuses:
 
 - `approved`
+- `expired`
 
 ## Validation
 
@@ -189,6 +190,10 @@ The validator checks:
 - control filenames match `control_id`
 - evidence source entries include name, system, and collection method
 - duplicate control IDs are rejected
+- evidence and exception required field types are correct
+- evidence and exception statuses use documented values
+- evidence collection dates and exception expiry dates use ISO `YYYY-MM-DD` format
+- approved exceptions have not passed their expiry dates
 - evidence records reference known controls
 - exception records reference known controls
 - evidence and exception IDs are duplicate-checked
@@ -227,6 +232,9 @@ The report includes:
 - total evidence items
 - total exceptions
 - evidence status counts
+- exception status counts
+- active exception summary
+- expired exception summary
 - controls by domain
 - per-control details
 - linked evidence summaries

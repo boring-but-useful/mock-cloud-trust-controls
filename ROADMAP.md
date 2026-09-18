@@ -38,14 +38,14 @@ Goal: make invalid or stale evidence visible before adding more providers and re
 
 Planned work:
 
-1. Constrain evidence and exception statuses to documented values.
-2. Validate evidence collection dates and exception expiry dates as ISO `YYYY-MM-DD` dates.
-3. Detect approved exceptions whose expiry date has passed.
-4. Distinguish validation errors from review warnings where appropriate.
-5. Make report generation stop when its input fails validation.
-6. Add report sections for active and expired exceptions.
-7. Add negative tests for invalid status, malformed date, expired exception handling, malformed YAML roots, and invalid field types.
-8. Update the documentation and generated sample report.
+- [x] Constrain evidence and exception statuses to documented values.
+- [x] Validate evidence collection dates and exception expiry dates as ISO `YYYY-MM-DD` dates.
+- [x] Detect approved exceptions whose expiry date has passed.
+- [ ] Distinguish validation errors from review warnings where appropriate.
+- [x] Make report generation stop when its input fails validation.
+- [x] Add report sections for active and expired exceptions.
+- [x] Add negative tests for invalid status, malformed date, expired exception handling, malformed YAML roots, and invalid field types.
+- [x] Update the documentation and generated sample report.
 
 Completion criteria:
 
@@ -148,4 +148,4 @@ Planned work:
 
 ## Immediate Next Action
 
-After the tested baseline branch is reviewed, create a short-lived data-integrity branch and implement date/status validation plus expired-exception reporting as the first Phase 2 slice.
+Complete the remaining Phase 2 warning/error distinction, review the data-integrity branch, and then begin the provider-aware evidence schema in Phase 3.
