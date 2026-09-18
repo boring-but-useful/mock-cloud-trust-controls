@@ -62,20 +62,21 @@ mock_cloud_trust_controls/
 ├── .python-version
 ├── AGENTS.md
 ├── README.md
-├── SPEC.md
-├── CODE_WALKTHROUGH.md
-├── CLOUD_LOGGING_ARCHITECTURE.md
-├── DESIGN_PRINCIPLES.md
-├── FINOPS_CONTROL_GUIDE.md
 ├── ROADMAP.md
 ├── SECURITY.md
 ├── Makefile
-├── PROVIDER_EVIDENCE_MODEL.md
 ├── requirements.txt
 ├── catalog.md
-├── assets/
-│   ├── cloud_logging_architecture.mmd
-│   └── cloud_logging_architecture.svg
+├── docs/
+│   ├── assets/
+│   │   ├── cloud_logging_architecture.mmd
+│   │   └── cloud_logging_architecture.svg
+│   ├── CLOUD_LOGGING_ARCHITECTURE.md
+│   ├── CODE_WALKTHROUGH.md
+│   ├── DESIGN_PRINCIPLES.md
+│   ├── FINOPS_CONTROL_GUIDE.md
+│   ├── PROVIDER_EVIDENCE_MODEL.md
+│   └── SPEC.md
 ├── controls/
 │   ├── MCTC-EVD-01.yaml
 │   ├── MCTC-COST-01.yaml
@@ -374,4 +375,4 @@ git push -u origin short-description
 
 ## Near-Term Roadmap
 
-See [ROADMAP.md](ROADMAP.md) for the staged implementation plan and completion criteria.
+See [ROADMAP.md](../ROADMAP.md) for the staged implementation plan and completion criteria.

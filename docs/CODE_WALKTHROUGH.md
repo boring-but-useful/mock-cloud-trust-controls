@@ -26,20 +26,21 @@ mock_cloud_trust_controls/
 ├── .python-version
 ├── AGENTS.md
 ├── README.md
-├── SPEC.md
-├── CODE_WALKTHROUGH.md
-├── CLOUD_LOGGING_ARCHITECTURE.md
-├── DESIGN_PRINCIPLES.md
-├── FINOPS_CONTROL_GUIDE.md
 ├── ROADMAP.md
 ├── SECURITY.md
 ├── Makefile
-├── PROVIDER_EVIDENCE_MODEL.md
 ├── requirements.txt
 ├── catalog.md
-├── assets/
-│   ├── cloud_logging_architecture.mmd
-│   └── cloud_logging_architecture.svg
+├── docs/
+│   ├── assets/
+│   │   ├── cloud_logging_architecture.mmd
+│   │   └── cloud_logging_architecture.svg
+│   ├── CLOUD_LOGGING_ARCHITECTURE.md
+│   ├── CODE_WALKTHROUGH.md
+│   ├── DESIGN_PRINCIPLES.md
+│   ├── FINOPS_CONTROL_GUIDE.md
+│   ├── PROVIDER_EVIDENCE_MODEL.md
+│   └── SPEC.md
 ├── controls/
 │   ├── MCTC-EVD-01.yaml
 │   ├── MCTC-COST-01.yaml
@@ -412,6 +413,6 @@ The GCP baseline follows current official guidance for audit-log types, explicit
 
 ## Roadmap And Current Work
 
-The staged implementation plan and its completion criteria live in [ROADMAP.md](ROADMAP.md). The provider-aware evidence model is documented in [PROVIDER_EVIDENCE_MODEL.md](PROVIDER_EVIDENCE_MODEL.md). The next slice deepens the AWS fixtures before the first Google Cloud logging evidence is added.
+The staged implementation plan and its completion criteria live in [ROADMAP.md](../ROADMAP.md). The provider-aware evidence model is documented in [PROVIDER_EVIDENCE_MODEL.md](PROVIDER_EVIDENCE_MODEL.md). The AWS/GCP logging vertical slice is complete; the next decision is whether optional read-only collectors justify their credential, API, and abstraction boundaries.
 
 The hardening checkpoint also adds a one-command `make verify` workflow, GitHub Actions verification, exact dependency pinning, weekly Dependabot checks, reproducible date options, strict warning mode, controlled input errors, and atomic report writes.
