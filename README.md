@@ -4,6 +4,8 @@ A small, public-safe security control framework designed for evidence-driven clo
 
 The project starts with readable YAML control definitions, mock evidence, exception examples, a validator, and Markdown, CSV, and JSON report generation.
 
+This is a personal portfolio and learning project. External feedback is welcome, but the project is not maintained as a community-supported compliance product.
+
 ## Project Structure
 
 ```text
@@ -18,6 +20,7 @@ mock_cloud_trust_controls/
 ├── CODE_WALKTHROUGH.md
 ├── DESIGN_PRINCIPLES.md
 ├── FINOPS_CONTROL_GUIDE.md
+├── LICENSE
 ├── ROADMAP.md
 ├── SECURITY.md
 ├── Makefile
@@ -144,3 +147,7 @@ GitHub Actions runs `make verify` for pull requests and pushes to `main`. Depend
 The staged implementation plan is maintained in [ROADMAP.md](ROADMAP.md).
 
 The provider-aware evidence model is complete. The next engineering slice deepens the AWS fixtures before adding a Google Cloud logging vertical slice.
+
+## License
+
+This project is available under the [MIT License](LICENSE).
