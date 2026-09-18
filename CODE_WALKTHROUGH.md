@@ -28,6 +28,7 @@ mock_cloud_trust_controls/
 ├── README.md
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
+├── CLOUD_LOGGING_ARCHITECTURE.md
 ├── DESIGN_PRINCIPLES.md
 ├── FINOPS_CONTROL_GUIDE.md
 ├── ROADMAP.md
