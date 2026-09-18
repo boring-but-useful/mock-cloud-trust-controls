@@ -41,7 +41,7 @@ Planned work:
 - [x] Constrain evidence and exception statuses to documented values.
 - [x] Validate evidence collection dates and exception expiry dates as ISO `YYYY-MM-DD` dates.
 - [x] Detect approved exceptions whose expiry date has passed.
-- [ ] Distinguish validation errors from review warnings where appropriate.
+- [x] Distinguish validation errors from review warnings where appropriate.
 - [x] Make report generation stop when its input fails validation.
 - [x] Add report sections for active and expired exceptions.
 - [x] Add negative tests for invalid status, malformed date, expired exception handling, malformed YAML roots, and invalid field types.
@@ -148,4 +148,4 @@ Planned work:
 
 ## Immediate Next Action
 
-Complete the remaining Phase 2 warning/error distinction, review the data-integrity branch, and then begin the provider-aware evidence schema in Phase 3.
+Review and merge the Phase 2 warning/error work, then begin the provider-aware evidence schema in Phase 3 with a small schema proposal and migration plan before changing fixtures.

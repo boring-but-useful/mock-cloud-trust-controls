@@ -20,10 +20,13 @@ The project is public-safe. It uses synthetic controls, synthetic evidence, and 
 
 ```text
 mock_cloud_trust_controls/
+├── AGENTS.md
 ├── README.md
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
+├── DESIGN_PRINCIPLES.md
 ├── ROADMAP.md
+├── SECURITY.md
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -208,6 +211,7 @@ For evidence and exceptions, it validates:
 - statuses use documented values
 - collection and expiry dates use ISO `YYYY-MM-DD` format
 - approved exceptions have not passed their expiry dates
+- approved exceptions expiring within 30 days produce a non-blocking warning
 - IDs are not duplicated
 - each item references a known `control_id`
 
@@ -265,6 +269,7 @@ The report includes:
 - total controls reviewed
 - total evidence items
 - total exceptions
+- review warnings
 - evidence status summary
 - exception status and expired exception summaries
 - controls by domain
