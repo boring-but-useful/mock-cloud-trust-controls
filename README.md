@@ -20,6 +20,7 @@ mock_cloud_trust_controls/
 ├── ROADMAP.md
 ├── SECURITY.md
 ├── Makefile
+├── PROVIDER_EVIDENCE_MODEL.md
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -56,6 +57,7 @@ control intent -> requirement -> evidence -> test -> exception -> report
 - Seven starter controls
 - YAML control definitions
 - Mock evidence and exception examples
+- Provider-aware evidence provenance, scope, environment, and coverage gaps
 - Local validation and Markdown, CSV, and JSON report generation
 - Generic, illustrative framework references
 - No claim of official framework coverage
@@ -81,7 +83,7 @@ make verify
 
 On Debian or Ubuntu, install the distribution's `python3-venv` package first if virtual-environment creation reports that `ensurepip` is unavailable.
 
-`make verify` runs strict validation, regenerates all sample reports, checks the committed reports for drift, and runs the complete test suite.
+`make verify` runs current-date strict validation, regenerates all sample reports using the deterministic `SAMPLE_AS_OF` date, checks the committed reports for drift, and runs the complete test suite.
 
 Individual commands remain available:
 
@@ -91,7 +93,13 @@ make report
 make test
 ```
 
-The validator checks required fields and types, duplicate IDs, allowed statuses, ISO dates, expired exceptions, evidence samples, and control references. Valid but time-sensitive conditions are emitted as non-blocking review warnings. Invalid YAML and missing inputs produce controlled errors instead of tracebacks.
+The committed sample snapshot defaults to `2026-09-18`. Override it deliberately when refreshing the sample review date:
+
+```bash
+make report SAMPLE_AS_OF=2026-10-01
+```
+
+The validator checks required fields and types, provider and environment values, synthetic scope metadata, duplicate IDs, allowed statuses, ISO dates, expired exceptions, evidence samples, and control references. Valid but time-sensitive conditions are emitted as non-blocking review warnings. Invalid YAML and missing inputs produce controlled errors instead of tracebacks.
 
 Useful command-line options:
 
@@ -113,7 +121,7 @@ python3 scripts/generate_report.py --format json
 python3 scripts/generate_report.py --format csv --output build/review/controls.csv
 ```
 
-Markdown is the default human review document. CSV is a flat, one-row-per-control summary for spreadsheets. JSON preserves the complete nested control, evidence, exception, warning, and summary data for automation. The selected format determines the default destination under `reports/`; `--output` overrides it.
+Markdown is the default human review document. CSV is a flat, one-row-per-control summary for spreadsheets. JSON preserves the complete nested control, evidence, exception, warning, provider-coverage, and summary data for automation. Reports include the effective review date and identify provider evidence gaps. The selected format determines the default destination under `reports/`; `--output` overrides it.
 
 The report generator validates its input before writing and replaces the destination atomically, preserving the previous report if validation or writing fails. All three formats use only the Python standard library beyond the project's existing YAML dependency.
 
@@ -122,6 +130,7 @@ GitHub Actions runs `make verify` for pull requests and pushes to `main`. Depend
 ## Security And Design
 
 - [DESIGN_PRINCIPLES.md](DESIGN_PRINCIPLES.md) defines trust boundaries, validation behavior, evidence provenance, least privilege, failure handling, dependency policy, and testing expectations.
+- [PROVIDER_EVIDENCE_MODEL.md](PROVIDER_EVIDENCE_MODEL.md) defines provider fields, coverage semantics, the current migration, and deferred collector work.
 - [SECURITY.md](SECURITY.md) defines safe reporting, sensitive-data rules, and requirements for future cloud collectors.
 - [AGENTS.md](AGENTS.md) keeps the repository workflow and engineering guardrails durable across future work sessions.
 
@@ -129,4 +138,4 @@ GitHub Actions runs `make verify` for pull requests and pushes to `main`. Depend
 
 The staged implementation plan is maintained in [ROADMAP.md](ROADMAP.md).
 
-The current engineering slice adds deterministic Markdown, CSV, and JSON output from one validated report model. Multi-cloud evidence support follows this reporting checkpoint.
+The provider-aware evidence model is complete. The next engineering slice deepens the AWS fixtures before adding a Google Cloud logging vertical slice.

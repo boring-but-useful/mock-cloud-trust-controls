@@ -32,6 +32,7 @@ mock_cloud_trust_controls/
 ├── ROADMAP.md
 ├── SECURITY.md
 ├── Makefile
+├── PROVIDER_EVIDENCE_MODEL.md
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -112,6 +113,10 @@ Each evidence item has:
 
 - `evidence_id`
 - `control_id`
+- `provider`
+- `scope`
+- `environment`
+- optional `resource_ref`
 - `source_system`
 - `collection_method`
 - `collection_date`
@@ -119,13 +124,16 @@ Each evidence item has:
 - `status`
 - `summary`
 
-The important link is `control_id`. That is how evidence gets attached to a control in the generated report.
+The important link is `control_id`. That is how evidence gets attached to a control in the generated report. Provider, scope, environment, and resource metadata preserve where the evidence came from and what it covered.
 
 Example:
 
 ```yaml
 - evidence_id: EV-VULN-001
   control_id: MCTC-VULN-01
+  provider: aws
+  scope: account/example-production
+  environment: production
   source_system: AWS Security Hub
   status: needs_review
 ```
@@ -208,7 +216,7 @@ For controls, it validates:
 - required fields exist
 - required fields have the expected Python type
 - `control_id` matches the filename
-- each `evidence_sources` entry includes `name`, `system`, and `collection_method`
+- each `evidence_sources` entry includes `name`, `provider`, `system`, and `collection_method`
 - duplicate control IDs are rejected
 
 For evidence and exceptions, it validates:
@@ -216,6 +224,9 @@ For evidence and exceptions, it validates:
 - required fields exist
 - required fields have the expected types
 - statuses use documented values
+- evidence providers use `aws`, `gcp`, or `common`
+- evidence environments use `production`, `staging`, or `shared`
+- scope and optional resource references are non-empty
 - collection and expiry dates use ISO `YYYY-MM-DD` format
 - approved exceptions have not passed their expiry dates
 - approved exceptions expiring within 30 days produce a non-blocking warning
@@ -271,6 +282,9 @@ The shared model also calculates:
 - evidence status counts
 - exception status counts
 - control counts by domain
+- evidence totals and statuses by provider
+- evidence totals and statuses by owner
+- provider coverage gaps derived from declared sources and current evidence
 
 The renderer writes one of three committed examples:
 
@@ -280,7 +294,7 @@ reports/sample_report.csv
 reports/sample_report.json
 ```
 
-Markdown favors human review, CSV provides a flat one-row-per-control spreadsheet view, and JSON retains the full nested structure for software integrations. Keeping rendering separate from report assembly prevents format-specific code from changing validation or business rules.
+Markdown favors human review, CSV provides a flat one-row-per-control spreadsheet view, and JSON retains the full nested structure for software integrations. Each format records the review date and provider coverage. Keeping rendering separate from report assembly prevents format-specific code from changing validation or business rules.
 
 The generator validates before loading report data. It writes through a temporary file in the destination directory, flushes it, and atomically replaces the destination. `--format` selects the renderer and its default path, `--output` selects another destination, and `--strict-warnings` prevents report creation when warnings exist.
 
@@ -296,6 +310,9 @@ The report includes:
 - per-control detail
 - linked evidence summaries
 - linked exception summaries
+- provider evidence rollups
+- evidence-owner rollups
+- provider coverage gaps
 
 ## Generated Report
 
@@ -330,6 +347,8 @@ The report is generated output, but it is intentionally committed for now becaus
 - The schema is deliberately simple so the project can grow without a database or API.
 - The validator catches broken references, missing or mistyped fields, invalid statuses, malformed dates, and stale approved exceptions.
 - The report generator validates its inputs before writing output.
+- Provider expectations come from evidence-source declarations rather than a duplicate control-level field.
+- Committed sample reports use a fixed review date; current-date validation remains a separate verification step.
 - The unittest coverage exercises the command-line scripts against a temporary copy of the project, which keeps tests close to real usage.
 - Framework labels are generic, such as `SOC 2 style` and `ISO 27001 style`, until official mappings are verified.
 
@@ -341,6 +360,6 @@ The report is generated output, but it is intentionally committed for now becaus
 
 ## Roadmap And Current Work
 
-The staged implementation plan and its completion criteria live in [ROADMAP.md](ROADMAP.md). The current engineering slice builds one validated report model and renders it for human review, spreadsheets, and software integrations.
+The staged implementation plan and its completion criteria live in [ROADMAP.md](ROADMAP.md). The provider-aware evidence model is documented in [PROVIDER_EVIDENCE_MODEL.md](PROVIDER_EVIDENCE_MODEL.md). The next slice deepens the AWS fixtures before the first Google Cloud logging evidence is added.
 
 The hardening checkpoint also adds a one-command `make verify` workflow, GitHub Actions verification, exact dependency pinning, weekly Dependabot checks, reproducible date options, strict warning mode, controlled input errors, and atomic report writes.

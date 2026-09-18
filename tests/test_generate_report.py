@@ -18,7 +18,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 def copy_project(tmp_path: Path) -> Path:
     project_copy = tmp_path / "mock_cloud_trust_controls"
-    ignore = shutil.ignore_patterns(".git", ".pytest_cache", "__pycache__")
+    ignore = shutil.ignore_patterns(
+        ".git",
+        ".pytest_cache",
+        ".venv",
+        "__pycache__",
+        "venv",
+    )
     shutil.copytree(PROJECT_ROOT, project_copy, ignore=ignore)
     return project_copy
 
@@ -43,7 +49,7 @@ class GenerateReportTests(unittest.TestCase):
             report_path = project_copy / "reports" / "sample_report.md"
             report_path.unlink()
 
-            result = run_generator(project_copy)
+            result = run_generator(project_copy, "--as-of", "2026-09-18")
 
             self.assertEqual(result.returncode, 0)
             self.assertEqual(result.stdout.strip(), "Wrote reports/sample_report.md")
@@ -51,6 +57,7 @@ class GenerateReportTests(unittest.TestCase):
 
             report = report_path.read_text(encoding="utf-8")
             self.assertIn("# Mock Cloud Trust Controls - Sample Report", report)
+            self.assertIn("- Review date: 2026-09-18", report)
             self.assertIn("- Controls reviewed: 7", report)
             self.assertIn("- Evidence items: 7", report)
             self.assertIn("- Exceptions: 3", report)
@@ -63,6 +70,16 @@ class GenerateReportTests(unittest.TestCase):
             self.assertIn("EX-IAM-001 (MCTC-IAM-02, expires 2027-09-18)", report)
             self.assertIn("## Expired Exceptions", report)
             self.assertIn("EX-NET-001 (MCTC-NET-01, expired 2026-08-15)", report)
+            self.assertIn("## Evidence By Provider", report)
+            self.assertIn("- aws: 4 (needs_review: 2, pass: 2)", report)
+            self.assertIn("- gcp: 0", report)
+            self.assertIn("## Provider Coverage Gaps", report)
+            self.assertIn(
+                "MCTC-LOG-01: missing gcp, common; current evidence: aws",
+                report,
+            )
+            self.assertIn("## Evidence By Owner", report)
+            self.assertIn("- Security / IT: 1 (needs_review: 1)", report)
             self.assertIn(
                 "MCTC-VULN-01: Vulnerability Findings Are Triaged And Remediated",
                 report,
@@ -138,7 +155,13 @@ class GenerateReportTests(unittest.TestCase):
             report_path = project_copy / "reports" / "sample_report.csv"
             report_path.unlink(missing_ok=True)
 
-            result = run_generator(project_copy, "--format", "csv")
+            result = run_generator(
+                project_copy,
+                "--as-of",
+                "2026-09-18",
+                "--format",
+                "csv",
+            )
 
             self.assertEqual(result.returncode, 0)
             self.assertEqual(result.stdout.strip(), "Wrote reports/sample_report.csv")
@@ -150,7 +173,13 @@ class GenerateReportTests(unittest.TestCase):
                 row for row in rows if row["control_id"] == "MCTC-IAM-02"
             )
             self.assertEqual(iam_control["evidence_count"], "1")
-            self.assertEqual(iam_control["evidence"], "EV-IAM-002 (needs_review)")
+            self.assertEqual(iam_control["evidence_providers"], "common")
+            self.assertEqual(iam_control["missing_evidence_providers"], "aws")
+            self.assertEqual(iam_control["evidence_owners"], "Security / IT")
+            self.assertEqual(
+                iam_control["evidence"],
+                "EV-IAM-002 [common] (needs_review)",
+            )
             self.assertEqual(iam_control["exception_count"], "1")
             self.assertIn("EX-IAM-001 (approved", iam_control["exceptions"])
 
@@ -160,7 +189,13 @@ class GenerateReportTests(unittest.TestCase):
             report_path = project_copy / "reports" / "sample_report.json"
             report_path.unlink(missing_ok=True)
 
-            result = run_generator(project_copy, "--format", "json")
+            result = run_generator(
+                project_copy,
+                "--as-of",
+                "2026-09-18",
+                "--format",
+                "json",
+            )
 
             self.assertEqual(result.returncode, 0)
             self.assertEqual(result.stdout.strip(), "Wrote reports/sample_report.json")
@@ -168,7 +203,11 @@ class GenerateReportTests(unittest.TestCase):
             self.assertEqual(report["summary"]["controls_reviewed"], 7)
             self.assertEqual(report["summary"]["evidence_items"], 7)
             self.assertEqual(report["summary"]["exceptions"], 3)
+            self.assertEqual(report["as_of"], "2026-09-18")
             self.assertEqual(report["review_warnings"], [])
+            self.assertEqual(report["evidence_by_provider"]["aws"]["total"], 4)
+            self.assertEqual(report["evidence_by_provider"]["gcp"]["total"], 0)
+            self.assertEqual(report["evidence_by_owner"]["Security / IT"]["total"], 1)
 
             iam_control = next(
                 control
@@ -176,6 +215,9 @@ class GenerateReportTests(unittest.TestCase):
                 if control["control_id"] == "MCTC-IAM-02"
             )
             self.assertEqual(iam_control["evidence"][0]["evidence_id"], "EV-IAM-002")
+            self.assertEqual(iam_control["evidence"][0]["provider"], "common")
+            self.assertEqual(iam_control["evidence_providers"], ["common"])
+            self.assertEqual(iam_control["missing_evidence_providers"], ["aws"])
             self.assertEqual(
                 iam_control["exceptions"][0]["expires_on"],
                 "2027-09-18",

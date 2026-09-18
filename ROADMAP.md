@@ -16,6 +16,7 @@ AWS and Google Cloud should usually provide different evidence for the same cont
 - Seven synthetic evidence records
 - Three synthetic exception records
 - Local validation and Markdown, CSV, and JSON report generation
+- Provider-aware evidence provenance and coverage-gap reporting
 - Unit tests for the validator and report generator
 - Public-safe data only
 - No live cloud credentials or API calls
@@ -24,17 +25,20 @@ AWS and Google Cloud should usually provide different evidence for the same cont
 
 Goal: land the existing requirements, documentation, and test work before starting another feature slice.
 
+Status: complete.
+
 Completion criteria:
 
-- `requirements.txt` documents the runtime dependency.
-- Validator and report-generator tests pass.
-- README, specification, and walkthrough agree with the repository state.
-- The branch has no uncommitted changes.
-- The feature branch is pushed and reviewed before merging to `main`.
+- [x] `requirements.txt` documents the runtime dependency.
+- [x] Validator and report-generator tests pass.
+- [x] README, specification, and walkthrough agree with the repository state.
+- [x] Completed baseline branches were pushed and reviewed before merging to `main`.
 
 ## Phase 2 - Strengthen Data Integrity
 
 Goal: make invalid or stale evidence visible before adding more providers and records.
+
+Status: complete.
 
 Planned work:
 
@@ -49,10 +53,10 @@ Planned work:
 
 Completion criteria:
 
-- Structurally invalid data causes validation and report generation to fail.
-- An expired approved exception is clearly reported and cannot silently appear current.
-- Current sample data intentionally demonstrates at least one active and one expired exception.
-- Tests cover the new validation and reporting behavior.
+- [x] Structurally invalid data causes validation and report generation to fail.
+- [x] An expired approved exception is clearly reported and cannot silently appear current.
+- [x] Current sample data intentionally demonstrates at least one active and one expired exception.
+- [x] Tests cover the new validation and reporting behavior.
 
 Hardening checkpoint completed after Phase 2:
 
@@ -68,20 +72,25 @@ Hardening checkpoint completed after Phase 2:
 
 Goal: support AWS, Google Cloud, and provider-neutral evidence without duplicating common control intent.
 
-Planned evidence fields:
+Status: complete. The model is documented in [PROVIDER_EVIDENCE_MODEL.md](PROVIDER_EVIDENCE_MODEL.md).
 
-- `provider`: `aws`, `gcp`, or `common`
-- `scope`: synthetic account, organization, folder, or project reference
-- `environment`: such as `production`, `staging`, or `shared`
-- `source_system`: provider service or common system
-- `resource_ref`: optional synthetic resource reference
+Implemented evidence fields:
 
-Planned behavior:
+- [x] `provider`: `aws`, `gcp`, or `common`
+- [x] `scope`: synthetic account, organization, folder, or project reference
+- [x] `environment`: `production`, `staging`, or `shared`
+- [x] `source_system`: provider service or common system
+- [x] `resource_ref`: optional synthetic resource reference
 
-- Evidence-source definitions identify their provider.
-- Reports roll up evidence by provider, control, status, and owner.
-- Reports identify provider coverage gaps.
-- Existing public-safe rules continue to apply to all fixtures.
+Implemented behavior:
+
+- [x] Evidence-source definitions identify their provider.
+- [x] Reports roll up evidence by provider, control, status, and owner.
+- [x] Reports identify provider coverage gaps.
+- [x] Reports record the effective review date.
+- [x] Existing public-safe rules continue to apply to all fixtures.
+- [x] Provider, environment, scope, and optional resource references are validated.
+- [x] Markdown, CSV, and JSON expose provider coverage appropriately.
 
 ## Phase 4 - Deepen The AWS Examples
 
@@ -140,12 +149,12 @@ Goal: make the repository easy to assess and demonstrate.
 
 Planned work:
 
-- Run validation and tests in GitHub Actions.
-- Detect generated-report drift.
+- [x] Run validation and tests in GitHub Actions.
+- [x] Detect generated-report drift.
 - [x] Add CSV and JSON output from a shared reporting model.
 - Add a small architecture diagram.
 - Add an AWS/Google Cloud comparison walkthrough.
-- Document local setup, test commands, design choices, limitations, and safe credential handling.
+- [x] Document local setup, test commands, design choices, limitations, and safe credential handling.
 
 ## Scope Guardrails
 
@@ -158,4 +167,4 @@ Planned work:
 
 ## Immediate Next Action
 
-Review and merge the multi-format reporting work, then begin the provider-aware evidence schema in Phase 3 with a small schema proposal and migration plan before changing fixtures.
+Review and merge the Phase 3 provider-aware evidence work, then deepen the AWS fixtures in Phase 4. Start with `MCTC-LOG-01` so the following branch can add the matching Google Cloud Audit Logs vertical slice without changing the control objective.

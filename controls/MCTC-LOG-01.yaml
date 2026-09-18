@@ -6,15 +6,23 @@ requirement: Production cloud accounts must collect audit logs for administrativ
 risk: Missing or short-lived audit logs limit incident investigation and make control evidence harder to defend.
 evidence_sources:
   - name: CloudTrail configuration
+    provider: aws
     system: AWS CloudTrail
     collection_method: Export trail configuration and account coverage.
   - name: Log bucket retention policy
+    provider: aws
     system: AWS S3
     collection_method: Export lifecycle and object lock configuration where applicable.
+  - name: Cloud Audit Logs configuration
+    provider: gcp
+    system: Google Cloud Audit Logs
+    collection_method: Export audit-log coverage, routing, exclusions, and retention settings.
   - name: SIEM ingestion status
+    provider: common
     system: SIEM or logging platform
     collection_method: Query recent administrative events by account.
   - name: Sample event query
+    provider: common
     system: SIEM or logging platform
     collection_method: Save source query and timestamped result.
 test_method: Confirm audit logging is enabled, centralized where expected, protected from casual deletion, and queryable.

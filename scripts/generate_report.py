@@ -14,6 +14,7 @@ from typing import Any, Callable, Sequence
 
 from validate_controls import (
     DataLoadError,
+    PROVIDERS,
     load_yaml,
     parse_date_argument,
     validate_project,
@@ -102,6 +103,7 @@ def build_report_data(
     evidence_items: list[dict],
     exception_items: list[dict],
     warnings: list[str],
+    as_of: date,
 ) -> dict[str, Any]:
     evidence_by_control: dict[str, list[dict]] = defaultdict(list)
     for item in evidence_items:
@@ -114,10 +116,29 @@ def build_report_data(
     control_results = []
     for control in controls:
         control_id = control["control_id"]
+        control_evidence = evidence_by_control.get(control_id, [])
+        expected_providers = {
+            source["provider"] for source in control["evidence_sources"]
+        }
+        evidence_providers = {item["provider"] for item in control_evidence}
+        evidence_owners = sorted({item["owner"] for item in control_evidence})
         control_results.append(
             {
                 **control,
-                "evidence": evidence_by_control.get(control_id, []),
+                "expected_evidence_providers": [
+                    provider for provider in PROVIDERS if provider in expected_providers
+                ],
+                "evidence_providers": [
+                    provider for provider in PROVIDERS if provider in evidence_providers
+                ],
+                "missing_evidence_providers": [
+                    provider
+                    for provider in PROVIDERS
+                    if provider in expected_providers
+                    and provider not in evidence_providers
+                ],
+                "evidence_owners": evidence_owners,
+                "evidence": control_evidence,
                 "exceptions": exceptions_by_control.get(control_id, []),
             }
         )
@@ -125,9 +146,48 @@ def build_report_data(
     status_counts = Counter(item["status"] for item in evidence_items)
     exception_status_counts = Counter(item["status"] for item in exception_items)
     domain_counts = Counter(control["domain"] for control in controls)
+    provider_status = {
+        provider: Counter(
+            item["status"]
+            for item in evidence_items
+            if item["provider"] == provider
+        )
+        for provider in PROVIDERS
+    }
+    provider_coverage = {
+        provider: {
+            "total": sum(provider_status[provider].values()),
+            "statuses": dict(sorted(provider_status[provider].items())),
+        }
+        for provider in PROVIDERS
+    }
+    evidence_owner_status = {
+        owner: Counter(
+            item["status"] for item in evidence_items if item["owner"] == owner
+        )
+        for owner in sorted({item["owner"] for item in evidence_items})
+    }
+    evidence_by_owner = {
+        owner: {
+            "total": sum(statuses.values()),
+            "statuses": dict(sorted(statuses.items())),
+        }
+        for owner, statuses in evidence_owner_status.items()
+    }
+    coverage_gaps = [
+        {
+            "control_id": control["control_id"],
+            "title": control["title"],
+            "evidence_providers": control["evidence_providers"],
+            "missing_providers": control["missing_evidence_providers"],
+        }
+        for control in control_results
+        if control["missing_evidence_providers"]
+    ]
 
     return {
         "report_title": "Mock Cloud Trust Controls - Sample Report",
+        "as_of": as_of,
         "disclaimer": (
             "This report is generated from mock controls, evidence, and exception "
             "data. It is public-safe and illustrative only."
@@ -147,6 +207,9 @@ def build_report_data(
             item for item in exception_items if item["status"] == "expired"
         ],
         "controls_by_domain": dict(sorted(domain_counts.items())),
+        "evidence_by_provider": provider_coverage,
+        "evidence_by_owner": evidence_by_owner,
+        "provider_coverage_gaps": coverage_gaps,
         "controls": control_results,
     }
 
@@ -160,6 +223,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         "",
         "## Summary",
         "",
+        f"- Review date: {report['as_of']}",
         f"- Controls reviewed: {summary['controls_reviewed']}",
         f"- Evidence items: {summary['evidence_items']}",
         f"- Exceptions: {summary['exceptions']}",
@@ -204,6 +268,33 @@ def render_markdown(report: dict[str, Any]) -> str:
     for domain, count in report["controls_by_domain"].items():
         lines.append(f"- {domain}: {count}")
 
+    lines.extend(["", "## Evidence By Provider", ""])
+    for provider, coverage in report["evidence_by_provider"].items():
+        status_summary = ", ".join(
+            f"{status}: {count}"
+            for status, count in coverage["statuses"].items()
+        )
+        detail = f" ({status_summary})" if status_summary else ""
+        lines.append(f"- {provider}: {coverage['total']}{detail}")
+
+    lines.extend(["", "## Provider Coverage Gaps", ""])
+    for gap in report["provider_coverage_gaps"]:
+        present = ", ".join(gap["evidence_providers"]) or "none"
+        missing = ", ".join(gap["missing_providers"])
+        lines.append(
+            f"- {gap['control_id']}: missing {missing}; current evidence: {present}"
+        )
+    if not report["provider_coverage_gaps"]:
+        lines.append("- No provider coverage gaps.")
+
+    lines.extend(["", "## Evidence By Owner", ""])
+    for owner, coverage in report["evidence_by_owner"].items():
+        status_summary = ", ".join(
+            f"{status}: {count}"
+            for status, count in coverage["statuses"].items()
+        )
+        lines.append(f"- {owner}: {coverage['total']} ({status_summary})")
+
     lines.extend(["", "## Control Detail", ""])
     for control in report["controls"]:
         lines.extend(
@@ -216,6 +307,14 @@ def render_markdown(report: dict[str, Any]) -> str:
                 f"- Automation status: {control['automation_status']}",
                 f"- Exception allowed: {control['exception_allowed']}",
                 f"- Objective: {control['objective']}",
+                "- Expected evidence providers: "
+                + ", ".join(control["expected_evidence_providers"]),
+                "- Current evidence providers: "
+                + (", ".join(control["evidence_providers"]) or "none"),
+                "- Missing evidence providers: "
+                + (", ".join(control["missing_evidence_providers"]) or "none"),
+                "- Evidence owners: "
+                + (", ".join(control["evidence_owners"]) or "none"),
                 "",
                 "Evidence:",
             ]
@@ -223,7 +322,9 @@ def render_markdown(report: dict[str, Any]) -> str:
 
         for evidence in control["evidence"]:
             lines.append(
-                f"- {evidence['evidence_id']} ({evidence['status']}): "
+                f"- {evidence['evidence_id']} "
+                f"[{evidence['provider']}; {evidence['environment']}; "
+                f"{evidence['scope']}] ({evidence['status']}): "
                 f"{evidence['summary']}"
             )
         if not control["evidence"]:
@@ -246,6 +347,7 @@ def render_csv(report: dict[str, Any]) -> str:
     """Render a flat, spreadsheet-friendly control summary."""
     output = io.StringIO(newline="")
     fieldnames = [
+        "as_of",
         "control_id",
         "title",
         "domain",
@@ -255,6 +357,10 @@ def render_csv(report: dict[str, Any]) -> str:
         "exception_allowed",
         "objective",
         "evidence_count",
+        "expected_evidence_providers",
+        "evidence_providers",
+        "missing_evidence_providers",
+        "evidence_owners",
         "evidence",
         "exception_count",
         "exceptions",
@@ -264,7 +370,7 @@ def render_csv(report: dict[str, Any]) -> str:
 
     for control in report["controls"]:
         evidence = "; ".join(
-            f"{item['evidence_id']} ({item['status']})"
+            f"{item['evidence_id']} [{item['provider']}] ({item['status']})"
             for item in control["evidence"]
         )
         exceptions = "; ".join(
@@ -273,6 +379,7 @@ def render_csv(report: dict[str, Any]) -> str:
         )
         writer.writerow(
             {
+                "as_of": report["as_of"],
                 "control_id": control["control_id"],
                 "title": control["title"],
                 "domain": control["domain"],
@@ -282,6 +389,14 @@ def render_csv(report: dict[str, Any]) -> str:
                 "exception_allowed": str(control["exception_allowed"]).lower(),
                 "objective": control["objective"],
                 "evidence_count": len(control["evidence"]),
+                "expected_evidence_providers": "; ".join(
+                    control["expected_evidence_providers"]
+                ),
+                "evidence_providers": "; ".join(control["evidence_providers"]),
+                "missing_evidence_providers": "; ".join(
+                    control["missing_evidence_providers"]
+                ),
+                "evidence_owners": "; ".join(control["evidence_owners"]),
                 "evidence": evidence,
                 "exception_count": len(control["exceptions"]),
                 "exceptions": exceptions,
@@ -316,9 +431,10 @@ REPORT_RENDERERS: dict[str, Callable[[dict[str, Any]], str]] = {
 def main(argv: Sequence[str] | None = None) -> int:
     args = build_argument_parser().parse_args(argv)
     report_file = args.output.resolve() if args.output else REPORT_FILES[args.format]
+    reference_date = args.as_of or date.today()
 
     # Refuse to publish reports from invalid source data.
-    validation = validate_project(args.as_of)
+    validation = validate_project(reference_date)
     if not validation.is_valid:
         print("Report generation stopped because validation failed:")
         for error in validation.errors:
@@ -354,6 +470,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         evidence_items,
         exception_items,
         validation.warnings,
+        reference_date,
     )
     content = REPORT_RENDERERS[args.format](report)
     try:

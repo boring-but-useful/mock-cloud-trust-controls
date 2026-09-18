@@ -4,6 +4,7 @@ This report is generated from mock controls, evidence, and exception data. It is
 
 ## Summary
 
+- Review date: 2026-09-18
 - Controls reviewed: 7
 - Evidence items: 7
 - Exceptions: 3
@@ -40,6 +41,28 @@ This report is generated from mock controls, evidence, and exception data. It is
 - Logging and monitoring: 1
 - Vulnerability and configuration management: 1
 
+## Evidence By Provider
+
+- aws: 4 (needs_review: 2, pass: 2)
+- gcp: 0
+- common: 3 (needs_review: 1, pass: 2)
+
+## Provider Coverage Gaps
+
+- MCTC-IAM-01: missing common; current evidence: aws
+- MCTC-IAM-02: missing aws; current evidence: common
+- MCTC-LOG-01: missing gcp, common; current evidence: aws
+- MCTC-NET-01: missing common; current evidence: aws
+- MCTC-VULN-01: missing common; current evidence: aws
+
+## Evidence By Owner
+
+- Platform: 1 (pass: 1)
+- Security / Compliance / Platform: 1 (pass: 1)
+- Security / IT: 1 (needs_review: 1)
+- Security / Platform: 2 (pass: 2)
+- Security / Platform / Application team: 2 (needs_review: 2)
+
 ## Control Detail
 
 ### MCTC-EVD-01: Evidence Is Source-Linked And Repeatable
@@ -50,9 +73,13 @@ This report is generated from mock controls, evidence, and exception data. It is
 - Automation status: Manual sample
 - Exception allowed: True
 - Objective: Make compliance evidence reproducible instead of screenshot-driven.
+- Expected evidence providers: common
+- Current evidence providers: common
+- Missing evidence providers: none
+- Evidence owners: Security / Compliance / Platform
 
 Evidence:
-- EV-EVD-001 (pass): Sample evidence includes source system, collection method, date, owner, and reviewer path.
+- EV-EVD-001 [common; shared; organization/example-company] (pass): Sample evidence includes source system, collection method, date, owner, and reviewer path.
 
 Exceptions:
 - No open mock exception.
@@ -65,9 +92,13 @@ Exceptions:
 - Automation status: Manual sample
 - Exception allowed: True
 - Objective: Make infrastructure changes reviewable and reproducible.
+- Expected evidence providers: common
+- Current evidence providers: common
+- Missing evidence providers: none
+- Evidence owners: Platform
 
 Evidence:
-- EV-IAC-001 (pass): Sampled infrastructure changes include code review and deployment evidence.
+- EV-IAC-001 [common; shared; organization/example-company] (pass): Sampled infrastructure changes include code review and deployment evidence.
 
 Exceptions:
 - No open mock exception.
@@ -80,9 +111,13 @@ Exceptions:
 - Automation status: Partial
 - Exception allowed: True
 - Objective: Limit privileged access to approved users and roles.
+- Expected evidence providers: aws, common
+- Current evidence providers: aws
+- Missing evidence providers: common
+- Evidence owners: Security / Platform
 
 Evidence:
-- EV-IAM-001 (pass): Sample privileged roles have owners, approvals, and current business reasons.
+- EV-IAM-001 [aws; production; account/example-production] (pass): Sample privileged roles have owners, approvals, and current business reasons.
 
 Exceptions:
 - No open mock exception.
@@ -95,9 +130,13 @@ Exceptions:
 - Automation status: Partial
 - Exception allowed: True
 - Objective: Ensure human access is centrally managed and auditable.
+- Expected evidence providers: aws, common
+- Current evidence providers: common
+- Missing evidence providers: aws
+- Evidence owners: Security / IT
 
 Evidence:
-- EV-IAM-002 (needs_review): Central authentication is in place; one break-glass account requires recurring review evidence.
+- EV-IAM-002 [common; production; organization/example-company] (needs_review): Central authentication is in place; one break-glass account requires recurring review evidence.
 
 Exceptions:
 - EX-IAM-001 (approved, expires 2027-09-18): Break-glass IAM user retained for recovery testing
@@ -110,9 +149,13 @@ Exceptions:
 - Automation status: Partial
 - Exception allowed: False
 - Objective: Maintain a reliable audit trail for cloud activity.
+- Expected evidence providers: aws, gcp, common
+- Current evidence providers: aws
+- Missing evidence providers: gcp, common
+- Evidence owners: Security / Platform
 
 Evidence:
-- EV-LOG-001 (pass): Audit logging is enabled and queryable for sampled production accounts.
+- EV-LOG-001 [aws; production; organization/example-cloud] (pass): Audit logging is enabled and queryable for sampled production accounts.
 
 Exceptions:
 - No open mock exception.
@@ -125,9 +168,13 @@ Exceptions:
 - Automation status: Partial
 - Exception allowed: True
 - Objective: Reduce unintended public exposure of cloud resources.
+- Expected evidence providers: aws, common
+- Current evidence providers: aws
+- Missing evidence providers: common
+- Evidence owners: Security / Platform / Application team
 
 Evidence:
-- EV-NET-001 (needs_review): Most sampled public exposure has owners; one route requires refreshed approval.
+- EV-NET-001 [aws; production; account/example-production] (needs_review): Most sampled public exposure has owners; one route requires refreshed approval.
 
 Exceptions:
 - EX-NET-001 (expired, expires 2026-08-15): Temporary public endpoint for vendor validation
@@ -140,9 +187,13 @@ Exceptions:
 - Automation status: Partial
 - Exception allowed: True
 - Objective: Ensure vulnerability and configuration findings are reviewed, owned, and remediated within defined expectations.
+- Expected evidence providers: aws, common
+- Current evidence providers: aws
+- Missing evidence providers: common
+- Evidence owners: Security / Platform / Application team
 
 Evidence:
-- EV-VULN-001 (needs_review): Critical and high findings are tracked; two medium findings require owner confirmation.
+- EV-VULN-001 [aws; production; account/example-production] (needs_review): Critical and high findings are tracked; two medium findings require owner confirmation.
 
 Exceptions:
 - EX-VULN-001 (expired, expires 2026-09-15): Medium dependency finding awaiting upstream patch
