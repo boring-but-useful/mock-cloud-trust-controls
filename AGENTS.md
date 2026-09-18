@@ -42,5 +42,5 @@ make verify
 
 ## Documentation
 
-- Keep `README.md`, `SPEC.md`, `CODE_WALKTHROUGH.md`, `ROADMAP.md`, `PROVIDER_EVIDENCE_MODEL.md`, `FINOPS_CONTROL_GUIDE.md`, `DESIGN_PRINCIPLES.md`, and `SECURITY.md` consistent with behavior.
+- Keep `README.md`, `SPEC.md`, `CODE_WALKTHROUGH.md`, `CLOUD_LOGGING_ARCHITECTURE.md`, `ROADMAP.md`, `PROVIDER_EVIDENCE_MODEL.md`, `FINOPS_CONTROL_GUIDE.md`, `DESIGN_PRINCIPLES.md`, and `SECURITY.md` consistent with behavior.
 - Document important trade-offs and rejected alternatives when the reason would not be obvious later.

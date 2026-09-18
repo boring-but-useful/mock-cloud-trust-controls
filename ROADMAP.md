@@ -182,8 +182,8 @@ Planned work:
 - [x] Run validation and tests in GitHub Actions.
 - [x] Detect generated-report drift.
 - [x] Add CSV and JSON output from a shared reporting model.
-- Add a small architecture diagram.
-- Add an AWS/Google Cloud comparison walkthrough.
+- [x] Add a small architecture diagram.
+- [x] Add an AWS/Google Cloud comparison walkthrough.
 - [x] Document local setup, test commands, design choices, limitations, and safe credential handling.
 
 ## Scope Guardrails
@@ -197,4 +197,4 @@ Planned work:
 
 ## Immediate Next Action
 
-Add the small architecture diagram and AWS/GCP comparison walkthrough from Phase 7. Use the completed `MCTC-LOG-01` evidence path as the concrete example, then evaluate optional read-only collectors without committing to a shared abstraction prematurely.
+Evaluate optional read-only collectors. Define the smallest safe AWS and Google Cloud collection boundaries, fixture strategy, permission failures, and normalization contract before choosing whether to implement them.
