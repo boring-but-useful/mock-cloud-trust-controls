@@ -6,15 +6,19 @@ requirement: Control evidence should identify the source system, query or collec
 risk: Manual evidence collection is hard to repeat, hard to review, and easy to misinterpret.
 evidence_sources:
   - name: Evidence collection script output
+    provider: common
     system: Local automation or CI/CD platform
     collection_method: Save command output with timestamp and source query.
   - name: Query result export
+    provider: common
     system: Source system
     collection_method: Export CSV, JSON, or report result.
   - name: Control mapping file
+    provider: common
     system: Control framework repository
     collection_method: Link control-to-evidence mapping.
   - name: Reviewer sign-off
+    provider: common
     system: GRC or ticketing system
     collection_method: Link review record.
 test_method: Select a control sample and confirm evidence can be traced back to its source system and regenerated.

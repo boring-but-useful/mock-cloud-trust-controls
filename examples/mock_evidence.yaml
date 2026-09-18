@@ -1,6 +1,10 @@
 evidence_items:
   - evidence_id: EV-IAM-001
     control_id: MCTC-IAM-01
+    provider: aws
+    scope: account/example-production
+    environment: production
+    resource_ref: aws://iam/example-production/role/platform-admin
     source_system: AWS IAM
     collection_method: Exported privileged roles and attached policies.
     collection_date: 2026-07-15
@@ -9,6 +13,10 @@ evidence_items:
     summary: Sample privileged roles have owners, approvals, and current business reasons.
   - evidence_id: EV-IAM-002
     control_id: MCTC-IAM-02
+    provider: common
+    scope: organization/example-company
+    environment: production
+    resource_ref: common://identity/production-cloud-access
     source_system: Identity provider
     collection_method: Exported production cloud access groups and MFA policy.
     collection_date: 2026-07-15
@@ -17,6 +25,10 @@ evidence_items:
     summary: Central authentication is in place; one break-glass account requires recurring review evidence.
   - evidence_id: EV-LOG-001
     control_id: MCTC-LOG-01
+    provider: aws
+    scope: organization/example-cloud
+    environment: production
+    resource_ref: aws://cloudtrail/example-cloud/organization-trail
     source_system: AWS CloudTrail
     collection_method: Exported trail configuration and sampled administrative event query.
     collection_date: 2026-07-15
@@ -25,6 +37,10 @@ evidence_items:
     summary: Audit logging is enabled and queryable for sampled production accounts.
   - evidence_id: EV-IAC-001
     control_id: MCTC-IAC-01
+    provider: common
+    scope: organization/example-company
+    environment: shared
+    resource_ref: common://source-control/infrastructure
     source_system: Source control and CI/CD
     collection_method: Sampled merged pull requests, workflow runs, and Terraform plan output.
     collection_date: 2026-07-15
@@ -33,6 +49,10 @@ evidence_items:
     summary: Sampled infrastructure changes include code review and deployment evidence.
   - evidence_id: EV-NET-001
     control_id: MCTC-NET-01
+    provider: aws
+    scope: account/example-production
+    environment: production
+    resource_ref: aws://config/example-production/public-exposure
     source_system: AWS Config
     collection_method: Exported internet exposure findings and linked approval records.
     collection_date: 2026-07-15
@@ -41,6 +61,10 @@ evidence_items:
     summary: Most sampled public exposure has owners; one route requires refreshed approval.
   - evidence_id: EV-EVD-001
     control_id: MCTC-EVD-01
+    provider: common
+    scope: organization/example-company
+    environment: shared
+    resource_ref: common://repository/mock-cloud-trust-controls
     source_system: Control framework repository
     collection_method: Reviewed control-to-evidence mapping and generated report output.
     collection_date: 2026-07-15
@@ -49,6 +73,10 @@ evidence_items:
     summary: Sample evidence includes source system, collection method, date, owner, and reviewer path.
   - evidence_id: EV-VULN-001
     control_id: MCTC-VULN-01
+    provider: aws
+    scope: account/example-production
+    environment: production
+    resource_ref: aws://security-hub/example-production/findings
     source_system: AWS Security Hub
     collection_method: Exported vulnerability findings with severity, owner, age, and status.
     collection_date: 2026-07-15

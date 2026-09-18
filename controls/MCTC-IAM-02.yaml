@@ -6,15 +6,19 @@ requirement: Human access to production cloud accounts must use central authenti
 risk: Unmanaged human access makes account recovery, offboarding, and investigation harder.
 evidence_sources:
   - name: SSO configuration
+    provider: common
     system: Identity provider
     collection_method: Export authentication settings for production cloud access.
   - name: MFA enforcement setting
+    provider: common
     system: Identity provider
     collection_method: Export MFA policy for production access groups.
   - name: IAM user inventory
+    provider: aws
     system: AWS IAM
     collection_method: Export IAM users and last-used metadata.
   - name: Access review record
+    provider: common
     system: GRC or ticketing system
     collection_method: Link the latest quarterly access review.
 test_method: Confirm human access paths use central authentication and identify unmanaged IAM users.

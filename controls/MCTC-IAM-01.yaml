@@ -6,15 +6,19 @@ requirement: Privileged access to production cloud accounts must be granted only
 risk: Over-broad privileged access increases the chance of accidental changes, data exposure, and unauthorized administrative action.
 evidence_sources:
   - name: IAM role inventory
+    provider: aws
     system: AWS IAM
     collection_method: Export privileged role list and attached policies.
   - name: SSO group membership
+    provider: common
     system: Identity provider
     collection_method: Export production administrator groups.
   - name: Access review record
+    provider: common
     system: GRC or ticketing system
     collection_method: Link the latest quarterly access review.
   - name: Approval record
+    provider: common
     system: Ticketing system
     collection_method: Link business justification and approver.
 test_method: Review privileged roles and confirm each assignment has an owner, approval, and current business need.

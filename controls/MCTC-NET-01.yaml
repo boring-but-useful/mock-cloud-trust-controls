@@ -6,18 +6,23 @@ requirement: Internet-facing cloud resources must have an approved business purp
 risk: Unreviewed public exposure can create avoidable attack paths and audit findings.
 evidence_sources:
   - name: Security group inventory
+    provider: aws
     system: AWS EC2
     collection_method: Export public ingress rules and associated resources.
   - name: Load balancer inventory
+    provider: aws
     system: AWS Elastic Load Balancing
     collection_method: Export internet-facing load balancers and listeners.
   - name: Public storage checks
+    provider: aws
     system: AWS S3 or AWS Config
     collection_method: Export public bucket findings.
   - name: Security findings
+    provider: aws
     system: AWS Config or Security Hub
     collection_method: Export exposure-related findings.
   - name: Owner approval record
+    provider: common
     system: Ticketing system
     collection_method: Link approval and business purpose.
 test_method: List internet-exposed resources and confirm owner, purpose, and approved network path.

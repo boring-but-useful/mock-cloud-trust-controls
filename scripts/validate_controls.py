@@ -39,6 +39,9 @@ REQUIRED_CONTROL_FIELDS = {
 REQUIRED_EVIDENCE_FIELDS = {
     "evidence_id": str,
     "control_id": str,
+    "provider": str,
+    "scope": str,
+    "environment": str,
     "source_system": str,
     "collection_method": str,
     "collection_date": (str, date),
@@ -61,6 +64,9 @@ REQUIRED_EXCEPTION_FIELDS = {
 
 EVIDENCE_STATUSES = {"pass", "needs_review"}
 EXCEPTION_STATUSES = {"approved", "expired"}
+PROVIDERS = ("aws", "gcp", "common")
+PROVIDER_VALUES = set(PROVIDERS)
+EVIDENCE_ENVIRONMENTS = {"production", "staging", "shared"}
 ISO_DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 EXCEPTION_EXPIRY_WARNING_DAYS = 30
 
@@ -153,11 +159,25 @@ def validate_control(path: Path) -> tuple[dict, list[str]]:
             if not isinstance(source, dict):
                 errors.append(f"{path.name}: evidence_sources[{index}] must be a mapping")
                 continue
-            for field in ("name", "system", "collection_method"):
-                if not source.get(field):
+            for field in ("name", "provider", "system", "collection_method"):
+                value = source.get(field)
+                if not value:
                     errors.append(
                         f"{path.name}: evidence_sources[{index}] missing '{field}'"
                     )
+                elif not isinstance(value, str):
+                    errors.append(
+                        f"{path.name}: evidence_sources[{index}] field "
+                        f"'{field}' must be str"
+                    )
+
+            provider = source.get("provider")
+            if isinstance(provider, str) and provider not in PROVIDER_VALUES:
+                allowed = ", ".join(PROVIDERS)
+                errors.append(
+                    f"{path.name}: evidence_sources[{index}] provider "
+                    f"'{provider}' is not allowed; expected one of: {allowed}"
+                )
 
     return data, errors
 
@@ -208,6 +228,37 @@ def validate_reference_items(
             errors.append(
                 f"{label}[{index}] status '{status}' is not allowed; expected one of: {allowed}"
             )
+
+        if label == "evidence_items":
+            provider = item.get("provider")
+            if isinstance(provider, str) and provider not in PROVIDER_VALUES:
+                allowed = ", ".join(PROVIDERS)
+                errors.append(
+                    f"{label}[{index}] provider '{provider}' is not allowed; "
+                    f"expected one of: {allowed}"
+                )
+
+            environment = item.get("environment")
+            if (
+                isinstance(environment, str)
+                and environment not in EVIDENCE_ENVIRONMENTS
+            ):
+                allowed = ", ".join(sorted(EVIDENCE_ENVIRONMENTS))
+                errors.append(
+                    f"{label}[{index}] environment '{environment}' is not allowed; "
+                    f"expected one of: {allowed}"
+                )
+
+            scope = item.get("scope")
+            if isinstance(scope, str) and not scope.strip():
+                errors.append(f"{label}[{index}] field 'scope' must not be empty")
+
+            if "resource_ref" in item:
+                resource_ref = item["resource_ref"]
+                if not isinstance(resource_ref, str) or not resource_ref.strip():
+                    errors.append(
+                        f"{label}[{index}] field 'resource_ref' must be a non-empty str"
+                    )
 
         parsed_date = parse_iso_date(item.get(date_field))
         if date_field in item and parsed_date is None:

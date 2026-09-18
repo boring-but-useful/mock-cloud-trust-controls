@@ -24,6 +24,7 @@ Current project state:
 - Requirements file for local setup
 - Python validation script
 - Python Markdown, CSV, and JSON report generator
+- Provider-aware evidence records and coverage-gap reporting
 - Unittest coverage for validation and report generation
 - Command-line support for reproducible review dates, strict warnings, and custom report paths
 - Controlled YAML and file-loading errors
@@ -67,6 +68,7 @@ mock_cloud_trust_controls/
 ├── ROADMAP.md
 ├── SECURITY.md
 ├── Makefile
+├── PROVIDER_EVIDENCE_MODEL.md
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -133,6 +135,7 @@ Required fields:
 Each `evidence_sources` item requires:
 
 - `name`
+- `provider`: `aws`, `gcp`, or `common`
 - `system`
 - `collection_method`
 
@@ -150,12 +153,17 @@ Each evidence item requires:
 
 - `evidence_id`
 - `control_id`
+- `provider`: `aws`, `gcp`, or `common`
+- `scope`: synthetic account, organization, folder, project, or shared-system reference
+- `environment`: `production`, `staging`, or `shared`
 - `source_system`
 - `collection_method`
 - `collection_date`
 - `owner`
 - `status`
 - `summary`
+
+`resource_ref` is optional. When present, it must be a non-empty synthetic reference.
 
 Current evidence statuses:
 
@@ -203,7 +211,10 @@ The validator checks:
 - required control fields are present
 - required field types are correct
 - control filenames match `control_id`
-- evidence source entries include name, system, and collection method
+- evidence source entries include name, provider, system, and collection method
+- evidence sources and evidence records use an allowed provider
+- evidence records include a non-empty scope and allowed environment
+- optional resource references are non-empty strings
 - duplicate control IDs are rejected
 - evidence and exception required field types are correct
 - evidence and exception statuses use documented values
@@ -249,6 +260,8 @@ json     -> reports/sample_report.json
 
 Markdown is the default. CSV is a flat, one-row-per-control summary designed for spreadsheets. JSON preserves the full nested report data for downstream automation. The output path can be changed with `--output`; `--format` remains authoritative when a custom path is used. Report writes use a temporary file in the destination directory followed by an atomic replacement so failed writes do not truncate the last valid report.
 
+The effective `--as-of` date is recorded in every format. The committed sample artifacts use the `Makefile`'s fixed `SAMPLE_AS_OF` value so they remain deterministic while standalone CLI runs continue to default to the current date.
+
 The report includes:
 
 - total controls reviewed
@@ -263,6 +276,9 @@ The report includes:
 - per-control details
 - linked evidence summaries
 - linked exception summaries
+- evidence totals and statuses by provider
+- evidence totals and statuses by owner
+- expected, present, and missing evidence providers by control
 
 ## Dependencies
 
@@ -292,6 +308,8 @@ The tests copy the project into a temporary directory, run the command-line scri
 - report generation writes the expected Markdown output
 - CSV output contains one row per control with linked evidence and exception summaries
 - JSON output preserves summary counts and nested evidence and exceptions
+- invalid provider, environment, evidence-source provider, and resource-reference values are rejected
+- provider totals and coverage gaps appear in generated formats
 
 ## Public-Safe Rules
 
@@ -310,7 +328,7 @@ The project is initialized as a local git repository under:
 Job_Search_2026/Portfolio/mock_cloud_trust_controls
 ```
 
-Current branch:
+Stable/default branch:
 
 ```text
 main
@@ -339,8 +357,7 @@ Normal change flow:
 
 ```bash
 git switch -c short-description
-python3 scripts/validate_controls.py
-python3 scripts/generate_report.py
+make verify
 git push -u origin short-description
 ```
 

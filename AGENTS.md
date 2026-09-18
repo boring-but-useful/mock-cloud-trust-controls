@@ -35,11 +35,12 @@ make verify
 - Normalize provider output before validation and reporting.
 - Prefer deterministic file-based behavior until a database or service is demonstrably necessary.
 - Preserve evidence provenance: source, scope, collection method, collection time, and ownership.
+- Derive expected provider coverage from each control's evidence-source declarations; do not add a duplicate control-level provider list.
 - Use errors for invalid or unsafe state. Use warnings only for valid state that needs timely review.
 - Add negative tests for validation, authorization, malformed inputs, partial results, and failure handling.
 - Avoid speculative abstractions. Introduce a shared interface when at least two concrete implementations need it.
 
 ## Documentation
 
-- Keep `README.md`, `SPEC.md`, `CODE_WALKTHROUGH.md`, `ROADMAP.md`, `DESIGN_PRINCIPLES.md`, and `SECURITY.md` consistent with behavior.
+- Keep `README.md`, `SPEC.md`, `CODE_WALKTHROUGH.md`, `ROADMAP.md`, `PROVIDER_EVIDENCE_MODEL.md`, `DESIGN_PRINCIPLES.md`, and `SECURITY.md` consistent with behavior.
 - Document important trade-offs and rejected alternatives when the reason would not be obvious later.

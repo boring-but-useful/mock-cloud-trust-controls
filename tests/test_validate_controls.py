@@ -16,7 +16,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 def copy_project(tmp_path: Path) -> Path:
     project_copy = tmp_path / "mock_cloud_trust_controls"
-    ignore = shutil.ignore_patterns(".git", ".pytest_cache", "__pycache__")
+    ignore = shutil.ignore_patterns(
+        ".git",
+        ".pytest_cache",
+        ".venv",
+        "__pycache__",
+        "venv",
+    )
     shutil.copytree(PROJECT_ROOT, project_copy, ignore=ignore)
     return project_copy
 
@@ -83,6 +89,71 @@ class ValidateControlsTests(unittest.TestCase):
 
             self.assertEqual(result.returncode, 1)
             self.assertIn("status 'mostly_passes' is not allowed", result.stdout)
+
+    def test_validate_controls_rejects_unknown_evidence_provider(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            evidence_path = project_copy / "examples" / "mock_evidence.yaml"
+            evidence = load_yaml(evidence_path)
+            evidence["evidence_items"][0]["provider"] = "azure"
+            write_yaml(evidence_path, evidence)
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "provider 'azure' is not allowed; expected one of: aws, gcp, common",
+                result.stdout,
+            )
+
+    def test_validate_controls_rejects_unknown_evidence_environment(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            evidence_path = project_copy / "examples" / "mock_evidence.yaml"
+            evidence = load_yaml(evidence_path)
+            evidence["evidence_items"][0]["environment"] = "qa"
+            write_yaml(evidence_path, evidence)
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "environment 'qa' is not allowed; expected one of: "
+                "production, shared, staging",
+                result.stdout,
+            )
+
+    def test_validate_controls_rejects_unknown_evidence_source_provider(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            control_path = project_copy / "controls" / "MCTC-LOG-01.yaml"
+            control = load_yaml(control_path)
+            control["evidence_sources"][0]["provider"] = "other"
+            write_yaml(control_path, control)
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "evidence_sources[1] provider 'other' is not allowed",
+                result.stdout,
+            )
+
+    def test_validate_controls_rejects_invalid_resource_reference(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            evidence_path = project_copy / "examples" / "mock_evidence.yaml"
+            evidence = load_yaml(evidence_path)
+            evidence["evidence_items"][0]["resource_ref"] = []
+            write_yaml(evidence_path, evidence)
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "field 'resource_ref' must be a non-empty str",
+                result.stdout,
+            )
 
     def test_validate_controls_rejects_malformed_date(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

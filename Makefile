@@ -1,4 +1,5 @@
 PYTHON ?= python3
+SAMPLE_AS_OF ?= 2026-09-18
 
 .PHONY: help validate report test verify
 
@@ -12,17 +13,17 @@ validate:
 	$(PYTHON) scripts/validate_controls.py
 
 report:
-	$(PYTHON) scripts/generate_report.py
-	$(PYTHON) scripts/generate_report.py --format csv
-	$(PYTHON) scripts/generate_report.py --format json
+	$(PYTHON) scripts/generate_report.py --as-of $(SAMPLE_AS_OF)
+	$(PYTHON) scripts/generate_report.py --as-of $(SAMPLE_AS_OF) --format csv
+	$(PYTHON) scripts/generate_report.py --as-of $(SAMPLE_AS_OF) --format json
 
 test:
 	$(PYTHON) -m unittest discover -s tests -v
 
 verify:
 	$(PYTHON) scripts/validate_controls.py --strict-warnings
-	$(PYTHON) scripts/generate_report.py --strict-warnings
-	$(PYTHON) scripts/generate_report.py --format csv --strict-warnings
-	$(PYTHON) scripts/generate_report.py --format json --strict-warnings
+	$(PYTHON) scripts/generate_report.py --as-of $(SAMPLE_AS_OF) --strict-warnings
+	$(PYTHON) scripts/generate_report.py --as-of $(SAMPLE_AS_OF) --format csv --strict-warnings
+	$(PYTHON) scripts/generate_report.py --as-of $(SAMPLE_AS_OF) --format json --strict-warnings
 	$(PYTHON) -m unittest discover -s tests -v
 	git diff --exit-code -- reports/sample_report.md reports/sample_report.csv reports/sample_report.json

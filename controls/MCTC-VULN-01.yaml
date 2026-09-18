@@ -5,16 +5,20 @@ objective: Ensure vulnerability and configuration findings are reviewed, owned, 
 requirement: Security findings for production cloud resources and software dependencies must be triaged, assigned an owner, tracked to remediation or approved exception, and reviewed on a recurring basis.
 risk: Unowned or aging vulnerability findings increase the chance that known weaknesses remain exploitable and make audit evidence difficult to defend.
 evidence_sources:
-  - name: Security finding export
-    system: AWS Security Hub or vulnerability scanner
+  - name: AWS security finding export
+    provider: aws
+    system: AWS Security Hub
     collection_method: Export open findings with severity, owner, age, and status.
   - name: Remediation ticket
+    provider: common
     system: Ticketing system
     collection_method: Link ticket showing owner, due date, and remediation notes.
   - name: Dependency scan result
+    provider: common
     system: CI/CD or dependency scanner
     collection_method: Save latest scan result for sampled service.
   - name: Exception register
+    provider: common
     system: Risk or ticketing system
     collection_method: Link approved exception with expiry and compensating control.
 test_method: Sample open and recently closed findings and confirm each has severity, owner, status, remediation evidence, or approved exception.
