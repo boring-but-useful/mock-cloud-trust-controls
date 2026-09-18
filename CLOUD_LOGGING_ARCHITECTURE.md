@@ -10,31 +10,9 @@ All names, scopes, findings, and resource references in this project are synthet
 
 ## Architecture
 
-```mermaid
-flowchart TB
-    subgraph AWS["AWS evidence path"]
-        A1["Organization and member accounts"] --> A2["Multi-Region organization trail"]
-        A2 --> A3["Protected S3 log archive"]
-        A2 --> A4["SIEM ingestion"]
-        A3 --> A5["Retention and integrity review"]
-        A4 --> A6["Saved administrative-event query"]
-    end
+![AWS and Google Cloud logging evidence paths converging into normalized validation and reports](assets/cloud_logging_architecture.svg)
 
-    subgraph GCP["Google Cloud evidence path"]
-        G1["Organization, folders, and projects"] --> G2["Cloud Audit Logs"]
-        G2 --> G3["Non-intercepting aggregated sink"]
-        G3 --> G4["Central locked Logging bucket"]
-        G3 --> G5["Export-health metrics"]
-        G4 --> G6["Central audit-log query"]
-    end
-
-    A5 --> N["Normalized evidence records"]
-    A6 --> N
-    G5 --> N
-    G6 --> N
-    N --> V["Validation and provider-coverage analysis"]
-    V --> R["Markdown, CSV, and JSON reports"]
-```
+The editable Mermaid source is committed at [`assets/cloud_logging_architecture.mmd`](assets/cloud_logging_architecture.mmd).
 
 The common boundary begins at normalized evidence. Provider APIs and configuration details differ, but every record still carries a provider, scope, environment, source system, collection method, collection date, owner, status, and summary.
 
