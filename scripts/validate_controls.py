@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import re
+import sys
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
-import re
-import sys
 
 import yaml
 
@@ -33,6 +33,7 @@ REQUIRED_CONTROL_FIELDS = {
     "tags": list,
 }
 
+# PyYAML may decode unquoted ISO dates as date objects.
 REQUIRED_EVIDENCE_FIELDS = {
     "evidence_id": str,
     "control_id": str,
@@ -85,6 +86,7 @@ def expected_type_name(expected_type: type | tuple[type, ...]) -> str:
 
 
 def parse_iso_date(value: object) -> date | None:
+    # Reject date-time values from date-only fields.
     if type(value) is date:
         return value
     if not isinstance(value, str) or not ISO_DATE_PATTERN.fullmatch(value):
@@ -183,6 +185,7 @@ def validate_reference_items(
             )
 
         if label == "exceptions" and parsed_date is not None:
+            # expires_on is inclusive through the listed date.
             if status == "approved" and parsed_date < as_of:
                 errors.append(
                     f"{label}[{index}] approved exception expired on {parsed_date.isoformat()}; "
@@ -228,6 +231,7 @@ def load_reference_items(
 
 
 def validate_project(as_of: date | None = None) -> ValidationResult:
+    # Inject the date for deterministic boundary tests and snapshots.
     reference_date = as_of or date.today()
     errors: list[str] = []
     warnings: list[str] = []

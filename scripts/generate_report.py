@@ -31,6 +31,7 @@ def load_controls() -> list[dict]:
 
 
 def main() -> int:
+    # Refuse to publish reports from invalid source data.
     validation = validate_project()
     if not validation.is_valid:
         print("Report generation stopped because validation failed:")
@@ -42,8 +43,16 @@ def main() -> int:
     evidence_data = load_yaml(EVIDENCE_FILE)
     exception_data = load_yaml(EXCEPTIONS_FILE)
 
-    evidence_items = evidence_data.get("evidence_items", []) if isinstance(evidence_data, dict) else []
-    exception_items = exception_data.get("exceptions", []) if isinstance(exception_data, dict) else []
+    evidence_items = (
+        evidence_data.get("evidence_items", [])
+        if isinstance(evidence_data, dict)
+        else []
+    )
+    exception_items = (
+        exception_data.get("exceptions", [])
+        if isinstance(exception_data, dict)
+        else []
+    )
 
     evidence_by_control: dict[str, list[dict]] = defaultdict(list)
     for item in evidence_items:
@@ -62,7 +71,8 @@ def main() -> int:
     lines = [
         "# Mock Cloud Trust Controls - Sample Report",
         "",
-        "This report is generated from mock controls, evidence, and exception data. It is public-safe and illustrative only.",
+        "This report is generated from mock controls, evidence, and exception "
+        "data. It is public-safe and illustrative only.",
         "",
         "## Summary",
         "",
@@ -74,16 +84,19 @@ def main() -> int:
         "",
     ]
 
+    # Keep warnings visible without blocking valid output.
     for warning in validation.warnings:
         lines.append(f"- {warning}")
     if not validation.warnings:
         lines.append("- No validation warnings.")
 
-    lines.extend([
-        "",
-        "## Evidence Status",
-        "",
-    ])
+    lines.extend(
+        [
+            "",
+            "## Evidence Status",
+            "",
+        ]
+    )
 
     for status, count in sorted(status_counts.items()):
         lines.append(f"- {status}: {count}")
@@ -151,7 +164,8 @@ def main() -> int:
         lines.append("Exceptions:")
         for exception in exceptions_by_control.get(control_id, []):
             lines.append(
-                f"- {exception['exception_id']} ({exception['status']}, expires {exception['expires_on']}): {exception['title']}"
+                f"- {exception['exception_id']} ({exception['status']}, "
+                f"expires {exception['expires_on']}): {exception['title']}"
             )
 
         if not exceptions_by_control.get(control_id):

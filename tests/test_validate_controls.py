@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from datetime import date, timedelta
 import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
+from datetime import date, timedelta
 from pathlib import Path
 
 import yaml
