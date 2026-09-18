@@ -15,7 +15,7 @@ AWS and Google Cloud should usually provide different evidence for the same cont
 - Seven YAML control definitions
 - Seven synthetic evidence records
 - Three synthetic exception records
-- Local validation and Markdown report generation
+- Local validation and Markdown, CSV, and JSON report generation
 - Unit tests for the validator and report generator
 - Public-safe data only
 - No live cloud credentials or API calls
@@ -142,7 +142,7 @@ Planned work:
 
 - Run validation and tests in GitHub Actions.
 - Detect generated-report drift.
-- Add CSV output after the reporting model stabilizes.
+- [x] Add CSV and JSON output from a shared reporting model.
 - Add a small architecture diagram.
 - Add an AWS/Google Cloud comparison walkthrough.
 - Document local setup, test commands, design choices, limitations, and safe credential handling.
@@ -158,4 +158,4 @@ Planned work:
 
 ## Immediate Next Action
 
-Review and merge the Phase 2 warning/error work, then begin the provider-aware evidence schema in Phase 3 with a small schema proposal and migration plan before changing fixtures.
+Review and merge the multi-format reporting work, then begin the provider-aware evidence schema in Phase 3 with a small schema proposal and migration plan before changing fixtures.

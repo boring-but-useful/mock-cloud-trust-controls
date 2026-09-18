@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import csv
+import json
 import shutil
 import subprocess
 import sys
@@ -129,6 +131,55 @@ class GenerateReportTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0)
             self.assertEqual(result.stdout.strip(), "Wrote build/review/report.md")
             self.assertTrue(output_path.exists())
+
+    def test_generate_report_writes_control_summary_csv(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            report_path = project_copy / "reports" / "sample_report.csv"
+            report_path.unlink(missing_ok=True)
+
+            result = run_generator(project_copy, "--format", "csv")
+
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(result.stdout.strip(), "Wrote reports/sample_report.csv")
+            with report_path.open(encoding="utf-8", newline="") as report_file:
+                rows = list(csv.DictReader(report_file))
+
+            self.assertEqual(len(rows), 7)
+            iam_control = next(
+                row for row in rows if row["control_id"] == "MCTC-IAM-02"
+            )
+            self.assertEqual(iam_control["evidence_count"], "1")
+            self.assertEqual(iam_control["evidence"], "EV-IAM-002 (needs_review)")
+            self.assertEqual(iam_control["exception_count"], "1")
+            self.assertIn("EX-IAM-001 (approved", iam_control["exceptions"])
+
+    def test_generate_report_writes_complete_json(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            report_path = project_copy / "reports" / "sample_report.json"
+            report_path.unlink(missing_ok=True)
+
+            result = run_generator(project_copy, "--format", "json")
+
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(result.stdout.strip(), "Wrote reports/sample_report.json")
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            self.assertEqual(report["summary"]["controls_reviewed"], 7)
+            self.assertEqual(report["summary"]["evidence_items"], 7)
+            self.assertEqual(report["summary"]["exceptions"], 3)
+            self.assertEqual(report["review_warnings"], [])
+
+            iam_control = next(
+                control
+                for control in report["controls"]
+                if control["control_id"] == "MCTC-IAM-02"
+            )
+            self.assertEqual(iam_control["evidence"][0]["evidence_id"], "EV-IAM-002")
+            self.assertEqual(
+                iam_control["exceptions"][0]["expires_on"],
+                "2027-09-18",
+            )
 
     def test_generate_report_strict_warnings_does_not_write(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

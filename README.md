@@ -2,7 +2,7 @@
 
 A small, public-safe security control framework designed for evidence-driven cloud trust and compliance automation.
 
-The project starts with readable YAML control definitions, mock evidence, exception examples, a simple validator, and a Markdown report generator.
+The project starts with readable YAML control definitions, mock evidence, exception examples, a validator, and Markdown, CSV, and JSON report generation.
 
 ## Project Structure
 
@@ -34,6 +34,8 @@ mock_cloud_trust_controls/
 │   ├── mock_evidence.yaml
 │   └── mock_exceptions.yaml
 ├── reports/
+│   ├── sample_report.csv
+│   ├── sample_report.json
 │   └── sample_report.md
 ├── scripts/
 │   ├── generate_report.py
@@ -54,7 +56,7 @@ control intent -> requirement -> evidence -> test -> exception -> report
 - Seven starter controls
 - YAML control definitions
 - Mock evidence and exception examples
-- Local validation and report generation
+- Local validation and Markdown, CSV, and JSON report generation
 - Generic, illustrative framework references
 - No claim of official framework coverage
 - No production or employer data
@@ -79,7 +81,7 @@ make verify
 
 On Debian or Ubuntu, install the distribution's `python3-venv` package first if virtual-environment creation reports that `ensurepip` is unavailable.
 
-`make verify` runs strict validation, regenerates the sample report, checks the committed report for drift, and runs the complete test suite.
+`make verify` runs strict validation, regenerates all sample reports, checks the committed reports for drift, and runs the complete test suite.
 
 Individual commands remain available:
 
@@ -102,9 +104,18 @@ python3 scripts/validate_controls.py --strict-warnings
 
 # Write a report to another location without risking partial output.
 python3 scripts/generate_report.py --output build/review/report.md
+
+# Generate spreadsheet-friendly and machine-readable formats.
+python3 scripts/generate_report.py --format csv
+python3 scripts/generate_report.py --format json
+
+# Combine a format with a custom destination.
+python3 scripts/generate_report.py --format csv --output build/review/controls.csv
 ```
 
-The report generator validates its input before writing and replaces the destination atomically, preserving the previous report if validation or writing fails.
+Markdown is the default human review document. CSV is a flat, one-row-per-control summary for spreadsheets. JSON preserves the complete nested control, evidence, exception, warning, and summary data for automation. The selected format determines the default destination under `reports/`; `--output` overrides it.
+
+The report generator validates its input before writing and replaces the destination atomically, preserving the previous report if validation or writing fails. All three formats use only the Python standard library beyond the project's existing YAML dependency.
 
 GitHub Actions runs `make verify` for pull requests and pushes to `main`. Dependabot checks the pinned Python dependency and pinned GitHub Actions weekly.
 
@@ -118,4 +129,4 @@ GitHub Actions runs `make verify` for pull requests and pushes to `main`. Depend
 
 The staged implementation plan is maintained in [ROADMAP.md](ROADMAP.md).
 
-The current engineering slice strengthens date and status validation, detects expired exceptions, and makes report generation reject invalid input. Multi-cloud evidence support follows that integrity work.
+The current engineering slice adds deterministic Markdown, CSV, and JSON output from one validated report model. Multi-cloud evidence support follows this reporting checkpoint.
