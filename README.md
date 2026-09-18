@@ -32,6 +32,9 @@ mock_cloud_trust_controls/
 ├── PROVIDER_EVIDENCE_MODEL.md
 ├── requirements.txt
 ├── catalog.md
+├── assets/
+│   ├── cloud_logging_architecture.mmd
+│   └── cloud_logging_architecture.svg
 ├── controls/
 │   ├── MCTC-EVD-01.yaml
 │   ├── MCTC-COST-01.yaml
@@ -66,15 +69,17 @@ control intent -> requirement -> evidence -> test -> exception -> report
 
 ## Current Scope
 
-- Ten starter controls, including three FinOps and cost-governance controls
+- Ten provider-neutral controls, including three FinOps and cost-governance controls
 - Seventeen synthetic evidence records, including an eight-record AWS/GCP/common logging review
-- YAML control definitions
-- Mock evidence and exception examples
-- Provider-aware evidence provenance, scope, environment, and coverage gaps
-- Local validation and Markdown, CSV, and JSON report generation
-- Generic, illustrative framework references
-- No claim of official framework coverage
-- No production or employer data
+- Four synthetic exception records demonstrating active and expired review states
+- One complete multi-cloud logging vertical slice covering generation, routing, retention, delivery health, and queryability
+- Provider-aware provenance, scope, environment, status, ownership, and coverage-gap analysis
+- FinOps evidence for allocation, budgets/anomalies, and reliability-aware optimization
+- A committed [architecture diagram and AWS/GCP walkthrough](CLOUD_LOGGING_ARCHITECTURE.md), with editable Mermaid source and rendered SVG
+- Python validation plus auditable Markdown, CSV, and JSON report generation
+- Automated tests, report-drift detection, dependency maintenance, CodeQL, secret scanning, and protected-branch CI
+- Generic illustrative framework references; no claim of official framework coverage
+- No live cloud collectors, production data, employer data, or committed cloud credentials
 
 ## Usage
 

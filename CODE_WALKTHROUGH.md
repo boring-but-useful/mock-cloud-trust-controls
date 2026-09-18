@@ -37,6 +37,9 @@ mock_cloud_trust_controls/
 ├── PROVIDER_EVIDENCE_MODEL.md
 ├── requirements.txt
 ├── catalog.md
+├── assets/
+│   ├── cloud_logging_architecture.mmd
+│   └── cloud_logging_architecture.svg
 ├── controls/
 │   ├── MCTC-EVD-01.yaml
 │   ├── MCTC-COST-01.yaml
