@@ -5,9 +5,9 @@ This report is generated from mock controls, evidence, and exception data. It is
 ## Summary
 
 - Review date: 2026-09-18
-- Controls reviewed: 7
-- Evidence items: 7
-- Exceptions: 3
+- Controls reviewed: 10
+- Evidence items: 10
+- Exceptions: 4
 
 ## Review Warnings
 
@@ -15,17 +15,18 @@ This report is generated from mock controls, evidence, and exception data. It is
 
 ## Evidence Status
 
-- needs_review: 3
-- pass: 4
+- needs_review: 5
+- pass: 5
 
 ## Exception Status
 
-- approved: 1
+- approved: 2
 - expired: 2
 
 ## Active Exceptions
 
 - EX-IAM-001 (MCTC-IAM-02, expires 2027-09-18): Break-glass IAM user retained for recovery testing
+- EX-COST-001 (MCTC-COST-03, expires 2026-12-31): Synthetic transaction database retains peak-capacity headroom
 
 ## Expired Exceptions
 
@@ -35,6 +36,7 @@ This report is generated from mock controls, evidence, and exception data. It is
 ## Controls By Domain
 
 - Cloud network exposure: 1
+- FinOps and cost governance: 3
 - Identity and access: 2
 - Incident response and evidence handling: 1
 - Infrastructure as code: 1
@@ -43,12 +45,15 @@ This report is generated from mock controls, evidence, and exception data. It is
 
 ## Evidence By Provider
 
-- aws: 4 (needs_review: 2, pass: 2)
+- aws: 6 (needs_review: 3, pass: 3)
 - gcp: 0
-- common: 3 (needs_review: 1, pass: 2)
+- common: 4 (needs_review: 2, pass: 2)
 
 ## Provider Coverage Gaps
 
+- MCTC-COST-01: missing aws, gcp; current evidence: common
+- MCTC-COST-02: missing gcp, common; current evidence: aws
+- MCTC-COST-03: missing gcp, common; current evidence: aws
 - MCTC-IAM-01: missing common; current evidence: aws
 - MCTC-IAM-02: missing aws; current evidence: common
 - MCTC-LOG-01: missing gcp, common; current evidence: aws
@@ -58,12 +63,71 @@ This report is generated from mock controls, evidence, and exception data. It is
 ## Evidence By Owner
 
 - Platform: 1 (pass: 1)
+- Platform / Finance: 2 (needs_review: 1, pass: 1)
+- Platform / Finance / Service owners: 1 (needs_review: 1)
 - Security / Compliance / Platform: 1 (pass: 1)
 - Security / IT: 1 (needs_review: 1)
 - Security / Platform: 2 (pass: 2)
 - Security / Platform / Application team: 2 (needs_review: 2)
 
 ## Control Detail
+
+### MCTC-COST-01: Cloud Spend Is Allocated And Owned
+
+- Domain: FinOps and cost governance
+- Owner: Platform / Finance / Service owners
+- Review cadence: Monthly
+- Automation status: Partial
+- Exception allowed: True
+- Objective: Make cloud spend attributable to accountable teams, services, and environments.
+- Expected evidence providers: aws, gcp, common
+- Current evidence providers: common
+- Missing evidence providers: aws, gcp
+- Evidence owners: Platform / Finance
+
+Evidence:
+- EV-COST-001 [common; shared; organization/example-company] (needs_review): Ninety-two percent of sampled spend is allocated; shared observability costs still need an approved allocation rule.
+
+Exceptions:
+- No open mock exception.
+
+### MCTC-COST-02: Budgets Forecasts And Cost Anomalies Are Reviewed
+
+- Domain: FinOps and cost governance
+- Owner: Platform / Finance / Service owners
+- Review cadence: Monthly
+- Automation status: Partial
+- Exception allowed: False
+- Objective: Detect material cost variance early enough for accountable teams to respond.
+- Expected evidence providers: aws, gcp, common
+- Current evidence providers: aws
+- Missing evidence providers: gcp, common
+- Evidence owners: Platform / Finance
+
+Evidence:
+- EV-COST-002 [aws; production; organization/example-cloud] (pass): Production budgets and anomaly notifications route to accountable owners, and the sampled variance had a documented disposition.
+
+Exceptions:
+- No open mock exception.
+
+### MCTC-COST-03: Cost Optimization Decisions Protect Reliability
+
+- Domain: FinOps and cost governance
+- Owner: Platform / Finance / Service owners
+- Review cadence: Monthly
+- Automation status: Partial
+- Exception allowed: True
+- Objective: Reduce avoidable spend without trading away required performance, resilience, or recovery capacity.
+- Expected evidence providers: aws, gcp, common
+- Current evidence providers: aws
+- Missing evidence providers: gcp, common
+- Evidence owners: Platform / Finance / Service owners
+
+Evidence:
+- EV-COST-003 [aws; production; account/example-production] (needs_review): Low-risk cleanup candidates are approved; a database rightsizing recommendation is deferred pending peak-load validation.
+
+Exceptions:
+- EX-COST-001 (approved, expires 2026-12-31): Synthetic transaction database retains peak-capacity headroom
 
 ### MCTC-EVD-01: Evidence Is Source-Linked And Repeatable
 

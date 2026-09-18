@@ -83,3 +83,39 @@ evidence_items:
     owner: Security / Platform / Application team
     status: needs_review
     summary: Critical and high findings are tracked; two medium findings require owner confirmation.
+  - evidence_id: EV-COST-001
+    control_id: MCTC-COST-01
+    provider: common
+    scope: organization/example-company
+    environment: shared
+    resource_ref: common://cost-reporting/monthly-allocation
+    source_system: Cloud cost reporting pipeline
+    collection_method: Calculated allocated, shared, and unallocated amortized spend for the review month.
+    collection_date: 2026-09-18
+    owner: Platform / Finance
+    status: needs_review
+    summary: Ninety-two percent of sampled spend is allocated; shared observability costs still need an approved allocation rule.
+  - evidence_id: EV-COST-002
+    control_id: MCTC-COST-02
+    provider: aws
+    scope: organization/example-cloud
+    environment: production
+    resource_ref: aws://budgets/example-cloud/production-monthly
+    source_system: AWS Budgets and Cost Anomaly Detection
+    collection_method: Reviewed budget thresholds, subscribers, anomaly monitors, and one closed cost-variance alert.
+    collection_date: 2026-09-18
+    owner: Platform / Finance
+    status: pass
+    summary: Production budgets and anomaly notifications route to accountable owners, and the sampled variance had a documented disposition.
+  - evidence_id: EV-COST-003
+    control_id: MCTC-COST-03
+    provider: aws
+    scope: account/example-production
+    environment: production
+    resource_ref: aws://cost-optimization/example-production/recommendations
+    source_system: AWS Cost Optimization Hub and Compute Optimizer
+    collection_method: Reviewed prioritized recommendations against utilization, reliability context, and change records.
+    collection_date: 2026-09-18
+    owner: Platform / Finance / Service owners
+    status: needs_review
+    summary: Low-risk cleanup candidates are approved; a database rightsizing recommendation is deferred pending peak-load validation.

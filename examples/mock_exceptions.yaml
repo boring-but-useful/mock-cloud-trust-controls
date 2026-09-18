@@ -26,3 +26,12 @@ exceptions:
     approved_by: Security reviewer
     expires_on: 2026-09-15
     status: expired
+  - exception_id: EX-COST-001
+    control_id: MCTC-COST-03
+    title: Synthetic transaction database retains peak-capacity headroom
+    owner: Platform / Finance / Application team
+    reason: Rightsizing is deferred until representative peak-load and failover tests confirm safe capacity thresholds.
+    compensating_control: Utilization and latency are monitored, the cost impact is reviewed monthly, and the recommendation remains tracked with an accountable owner.
+    approved_by: Platform and finance reviewer
+    expires_on: 2026-12-31
+    status: approved

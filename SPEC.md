@@ -16,9 +16,9 @@ It does not copy employer control language, use production data, or claim offici
 
 Current project state:
 
-- 7 YAML control definitions
-- 7 mock evidence records
-- 3 mock exception records
+- 10 YAML control definitions
+- 10 mock evidence records
+- 4 mock exception records
 - Markdown control catalog
 - Readable code walkthrough
 - Requirements file for local setup
@@ -65,6 +65,7 @@ mock_cloud_trust_controls/
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
 ├── DESIGN_PRINCIPLES.md
+├── FINOPS_CONTROL_GUIDE.md
 ├── ROADMAP.md
 ├── SECURITY.md
 ├── Makefile
@@ -73,6 +74,9 @@ mock_cloud_trust_controls/
 ├── catalog.md
 ├── controls/
 │   ├── MCTC-EVD-01.yaml
+│   ├── MCTC-COST-01.yaml
+│   ├── MCTC-COST-02.yaml
+│   ├── MCTC-COST-03.yaml
 │   ├── MCTC-IAC-01.yaml
 │   ├── MCTC-IAM-01.yaml
 │   ├── MCTC-IAM-02.yaml
@@ -105,6 +109,9 @@ mock_cloud_trust_controls/
 | MCTC-NET-01 | Cloud network exposure | Internet Exposure Is Approved And Documented | Monthly | Partial |
 | MCTC-EVD-01 | Incident response and evidence handling | Evidence Is Source-Linked And Repeatable | Quarterly | Manual sample |
 | MCTC-VULN-01 | Vulnerability and configuration management | Vulnerability Findings Are Triaged And Remediated | Monthly | Partial |
+| MCTC-COST-01 | FinOps and cost governance | Cloud Spend Is Allocated And Owned | Monthly | Partial |
+| MCTC-COST-02 | FinOps and cost governance | Budgets Forecasts And Cost Anomalies Are Reviewed | Monthly | Partial |
+| MCTC-COST-03 | FinOps and cost governance | Cost Optimization Decisions Protect Reliability | Monthly | Partial |
 
 ## Control Schema
 
@@ -229,9 +236,9 @@ The validator checks:
 Current expected output:
 
 ```text
-Validated 7 controls
-Validated 7 evidence items
-Validated 3 exceptions
+Validated 10 controls
+Validated 10 evidence items
+Validated 4 exceptions
 ```
 
 ## Report Generation

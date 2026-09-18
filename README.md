@@ -17,6 +17,7 @@ mock_cloud_trust_controls/
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
 ├── DESIGN_PRINCIPLES.md
+├── FINOPS_CONTROL_GUIDE.md
 ├── ROADMAP.md
 ├── SECURITY.md
 ├── Makefile
@@ -25,6 +26,9 @@ mock_cloud_trust_controls/
 ├── catalog.md
 ├── controls/
 │   ├── MCTC-EVD-01.yaml
+│   ├── MCTC-COST-01.yaml
+│   ├── MCTC-COST-02.yaml
+│   ├── MCTC-COST-03.yaml
 │   ├── MCTC-IAC-01.yaml
 │   ├── MCTC-IAM-01.yaml
 │   ├── MCTC-IAM-02.yaml
@@ -54,7 +58,7 @@ control intent -> requirement -> evidence -> test -> exception -> report
 
 ## Current Scope
 
-- Seven starter controls
+- Ten starter controls, including three FinOps and cost-governance controls
 - YAML control definitions
 - Mock evidence and exception examples
 - Provider-aware evidence provenance, scope, environment, and coverage gaps
@@ -130,6 +134,7 @@ GitHub Actions runs `make verify` for pull requests and pushes to `main`. Depend
 ## Security And Design
 
 - [DESIGN_PRINCIPLES.md](DESIGN_PRINCIPLES.md) defines trust boundaries, validation behavior, evidence provenance, least privilege, failure handling, dependency policy, and testing expectations.
+- [FINOPS_CONTROL_GUIDE.md](FINOPS_CONTROL_GUIDE.md) explains allocation, budgets and anomalies, reliability-aware optimization, provider mappings, and interview talking points.
 - [PROVIDER_EVIDENCE_MODEL.md](PROVIDER_EVIDENCE_MODEL.md) defines provider fields, coverage semantics, the current migration, and deferred collector work.
 - [SECURITY.md](SECURITY.md) defines safe reporting, sensitive-data rules, and requirements for future cloud collectors.
 - [AGENTS.md](AGENTS.md) keeps the repository workflow and engineering guardrails durable across future work sessions.

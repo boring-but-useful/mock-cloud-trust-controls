@@ -56,9 +56,9 @@ class ValidateControlsTests(unittest.TestCase):
             result = run_validator(project_copy)
 
             self.assertEqual(result.returncode, 0)
-            self.assertIn("Validated 7 controls", result.stdout)
-            self.assertIn("Validated 7 evidence items", result.stdout)
-            self.assertIn("Validated 3 exceptions", result.stdout)
+            self.assertIn("Validated 10 controls", result.stdout)
+            self.assertIn("Validated 10 evidence items", result.stdout)
+            self.assertIn("Validated 4 exceptions", result.stdout)
 
     def test_validate_controls_reports_missing_required_field(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -222,7 +222,7 @@ class ValidateControlsTests(unittest.TestCase):
                 f"approved exception expires in 10 days on {expires_on.isoformat()}",
                 result.stdout,
             )
-            self.assertIn("Validated 3 exceptions", result.stdout)
+            self.assertIn("Validated 4 exceptions", result.stdout)
 
     def test_exception_expiry_warning_window_boundaries(self) -> None:
         for days_remaining, warning_expected in ((0, True), (30, True), (31, False)):
@@ -292,16 +292,16 @@ class ValidateControlsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_copy = copy_project(Path(tmp_dir))
 
-            normal = run_validator(project_copy, "--as-of", "2027-09-01")
+            normal = run_validator(project_copy, "--as-of", "2026-12-15")
             strict = run_validator(
                 project_copy,
                 "--as-of",
-                "2027-09-01",
+                "2026-12-15",
                 "--strict-warnings",
             )
 
             self.assertEqual(normal.returncode, 0)
-            self.assertIn("expires in 17 days", normal.stdout)
+            self.assertIn("expires in 16 days", normal.stdout)
             self.assertEqual(strict.returncode, 1)
             self.assertIn("--strict-warnings was set", strict.stdout)
 

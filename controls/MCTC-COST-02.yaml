@@ -1,0 +1,42 @@
+control_id: MCTC-COST-02
+domain: FinOps and cost governance
+title: Budgets Forecasts And Cost Anomalies Are Reviewed
+objective: Detect material cost variance early enough for accountable teams to respond.
+requirement: Material cloud scopes must have budgets or forecasts, cost-anomaly monitoring, routed notifications, and a documented triage path. Alerts must lead to an ownership decision rather than notification-only noise.
+risk: Delayed detection of usage spikes, configuration errors, or pricing changes can create avoidable financial impact and undermine planning.
+evidence_sources:
+  - name: AWS budget configuration
+    provider: aws
+    system: AWS Budgets
+    collection_method: Export budget thresholds, actual and forecast values, subscribers, and alert state.
+  - name: AWS cost anomaly configuration
+    provider: aws
+    system: AWS Cost Anomaly Detection
+    collection_method: Export monitors, subscriptions, thresholds, and sampled anomalies.
+  - name: Google Cloud budget configuration
+    provider: gcp
+    system: Google Cloud Billing budgets
+    collection_method: Export scoped budgets, thresholds, notification channels, and current spend.
+  - name: Forecast review
+    provider: common
+    system: Finance or cost reporting workflow
+    collection_method: Link the latest forecast variance review and owner sign-off.
+  - name: Cost anomaly response record
+    provider: common
+    system: Incident or ticketing system
+    collection_method: Sample an anomaly from alert through triage, decision, and closure.
+test_method: Sample budget and anomaly configurations plus one recent alert, then confirm thresholds are meaningful, notifications reach an owner, and the variance was investigated.
+owner: Platform / Finance / Service owners
+review_cadence: Monthly
+automation_status: Partial
+exception_allowed: false
+exception_requirements:
+  - Monitoring gaps require an incident or maintenance record.
+  - A temporary manual review must identify an owner and restoration date.
+related_frameworks:
+  - FinOps practice
+tags:
+  - finops
+  - budgets
+  - forecasting
+  - anomaly-detection

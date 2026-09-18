@@ -11,6 +11,9 @@ This catalog is public-safe and illustrative. It practices control design, evide
 | MCTC-NET-01 | Cloud network exposure | Internet Exposure Is Approved And Documented | Monthly | Partial |
 | MCTC-EVD-01 | Incident response and evidence handling | Evidence Is Source-Linked And Repeatable | Quarterly | Manual sample |
 | MCTC-VULN-01 | Vulnerability and configuration management | Vulnerability Findings Are Triaged And Remediated | Monthly | Partial |
+| MCTC-COST-01 | FinOps and cost governance | Cloud Spend Is Allocated And Owned | Monthly | Partial |
+| MCTC-COST-02 | FinOps and cost governance | Budgets Forecasts And Cost Anomalies Are Reviewed | Monthly | Partial |
+| MCTC-COST-03 | FinOps and cost governance | Cost Optimization Decisions Protect Reliability | Monthly | Partial |
 
 ## Domains
 
@@ -20,6 +23,7 @@ This catalog is public-safe and illustrative. It practices control design, evide
 - Cloud network exposure
 - Vulnerability and configuration management
 - Incident response and evidence handling
+- FinOps and cost governance
 - Exceptions and risk acceptance
 
 ## Schema

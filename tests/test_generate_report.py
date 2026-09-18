@@ -58,20 +58,20 @@ class GenerateReportTests(unittest.TestCase):
             report = report_path.read_text(encoding="utf-8")
             self.assertIn("# Mock Cloud Trust Controls - Sample Report", report)
             self.assertIn("- Review date: 2026-09-18", report)
-            self.assertIn("- Controls reviewed: 7", report)
-            self.assertIn("- Evidence items: 7", report)
-            self.assertIn("- Exceptions: 3", report)
+            self.assertIn("- Controls reviewed: 10", report)
+            self.assertIn("- Evidence items: 10", report)
+            self.assertIn("- Exceptions: 4", report)
             self.assertIn("## Review Warnings", report)
             self.assertIn("- No validation warnings.", report)
             self.assertIn("## Exception Status", report)
-            self.assertIn("- approved: 1", report)
+            self.assertIn("- approved: 2", report)
             self.assertIn("- expired: 2", report)
             self.assertIn("## Active Exceptions", report)
             self.assertIn("EX-IAM-001 (MCTC-IAM-02, expires 2027-09-18)", report)
             self.assertIn("## Expired Exceptions", report)
             self.assertIn("EX-NET-001 (MCTC-NET-01, expired 2026-08-15)", report)
             self.assertIn("## Evidence By Provider", report)
-            self.assertIn("- aws: 4 (needs_review: 2, pass: 2)", report)
+            self.assertIn("- aws: 6 (needs_review: 3, pass: 3)", report)
             self.assertIn("- gcp: 0", report)
             self.assertIn("## Provider Coverage Gaps", report)
             self.assertIn(
@@ -80,6 +80,8 @@ class GenerateReportTests(unittest.TestCase):
             )
             self.assertIn("## Evidence By Owner", report)
             self.assertIn("- Security / IT: 1 (needs_review: 1)", report)
+            self.assertIn("MCTC-COST-01: Cloud Spend Is Allocated And Owned", report)
+            self.assertIn("EX-COST-001 (MCTC-COST-03, expires 2026-12-31)", report)
             self.assertIn(
                 "MCTC-VULN-01: Vulnerability Findings Are Triaged And Remediated",
                 report,
@@ -168,7 +170,7 @@ class GenerateReportTests(unittest.TestCase):
             with report_path.open(encoding="utf-8", newline="") as report_file:
                 rows = list(csv.DictReader(report_file))
 
-            self.assertEqual(len(rows), 7)
+            self.assertEqual(len(rows), 10)
             iam_control = next(
                 row for row in rows if row["control_id"] == "MCTC-IAM-02"
             )
@@ -200,12 +202,12 @@ class GenerateReportTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0)
             self.assertEqual(result.stdout.strip(), "Wrote reports/sample_report.json")
             report = json.loads(report_path.read_text(encoding="utf-8"))
-            self.assertEqual(report["summary"]["controls_reviewed"], 7)
-            self.assertEqual(report["summary"]["evidence_items"], 7)
-            self.assertEqual(report["summary"]["exceptions"], 3)
+            self.assertEqual(report["summary"]["controls_reviewed"], 10)
+            self.assertEqual(report["summary"]["evidence_items"], 10)
+            self.assertEqual(report["summary"]["exceptions"], 4)
             self.assertEqual(report["as_of"], "2026-09-18")
             self.assertEqual(report["review_warnings"], [])
-            self.assertEqual(report["evidence_by_provider"]["aws"]["total"], 4)
+            self.assertEqual(report["evidence_by_provider"]["aws"]["total"], 6)
             self.assertEqual(report["evidence_by_provider"]["gcp"]["total"], 0)
             self.assertEqual(report["evidence_by_owner"]["Security / IT"]["total"], 1)
 
@@ -231,7 +233,7 @@ class GenerateReportTests(unittest.TestCase):
             result = run_generator(
                 project_copy,
                 "--as-of",
-                "2027-09-01",
+                "2026-12-15",
                 "--strict-warnings",
                 "--output",
                 str(output_path),

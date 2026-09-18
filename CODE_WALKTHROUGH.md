@@ -29,6 +29,7 @@ mock_cloud_trust_controls/
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
 ├── DESIGN_PRINCIPLES.md
+├── FINOPS_CONTROL_GUIDE.md
 ├── ROADMAP.md
 ├── SECURITY.md
 ├── Makefile
@@ -37,6 +38,9 @@ mock_cloud_trust_controls/
 ├── catalog.md
 ├── controls/
 │   ├── MCTC-EVD-01.yaml
+│   ├── MCTC-COST-01.yaml
+│   ├── MCTC-COST-02.yaml
+│   ├── MCTC-COST-03.yaml
 │   ├── MCTC-IAC-01.yaml
 │   ├── MCTC-IAM-01.yaml
 │   ├── MCTC-IAM-02.yaml
@@ -98,6 +102,9 @@ Current controls:
 | MCTC-NET-01 | Cloud network exposure | Ensure internet exposure is approved and documented. |
 | MCTC-EVD-01 | Incident response and evidence handling | Ensure evidence is source-linked and repeatable. |
 | MCTC-VULN-01 | Vulnerability and configuration management | Ensure findings are triaged, owned, remediated, or excepted. |
+| MCTC-COST-01 | FinOps and cost governance | Allocate cloud spend to accountable services and owners. |
+| MCTC-COST-02 | FinOps and cost governance | Detect and route budget, forecast, and anomaly variance. |
+| MCTC-COST-03 | FinOps and cost governance | Evaluate savings against reliability and commitment risk. |
 
 ## Mock Evidence
 
@@ -186,9 +193,9 @@ python3 scripts/validate_controls.py
 Expected output:
 
 ```text
-Validated 7 controls
-Validated 7 evidence items
-Validated 3 exceptions
+Validated 10 controls
+Validated 10 evidence items
+Validated 4 exceptions
 ```
 
 ### What It Checks
@@ -327,16 +334,16 @@ reports/sample_report.json
 Current summary:
 
 ```text
-Controls reviewed: 7
-Evidence items: 7
-Exceptions: 3
+Controls reviewed: 10
+Evidence items: 10
+Exceptions: 4
 ```
 
 Current evidence status counts:
 
 ```text
-pass: 4
-needs_review: 3
+pass: 5
+needs_review: 5
 ```
 
 The report is generated output, but it is intentionally committed for now because it shows what the tool produces without requiring someone to run the script first.
