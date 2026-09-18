@@ -117,14 +117,14 @@ Completed scope:
 
 IAM, AWS Config, Security Hub, and infrastructure-change evidence can receive the same treatment later. They are not prerequisites for the focused Google Cloud logging slice.
 
-## FinOps Interview-Practice Checkpoint
+## FinOps Controls Checkpoint
 
 Status: complete.
 
 - [x] Add provider-neutral controls for allocation and ownership, budgets and anomaly response, and reliability-aware optimization.
 - [x] Add AWS and common synthetic evidence plus an approved capacity-headroom exception.
 - [x] Declare comparable Google Cloud evidence sources without inventing GCP evidence.
-- [x] Document provider mappings, design trade-offs, and a concise interview walkthrough in [FINOPS_CONTROL_GUIDE.md](FINOPS_CONTROL_GUIDE.md).
+- [x] Document provider mappings, design trade-offs, and a concise review approach in [FINOPS_CONTROL_GUIDE.md](FINOPS_CONTROL_GUIDE.md).
 
 ## Phase 5 - Add A Google Cloud Vertical Slice
 

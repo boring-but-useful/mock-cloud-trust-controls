@@ -149,7 +149,7 @@ GitHub Actions runs `make verify` for pull requests and pushes to `main`. Depend
 
 - [DESIGN_PRINCIPLES.md](DESIGN_PRINCIPLES.md) defines trust boundaries, validation behavior, evidence provenance, least privilege, failure handling, dependency policy, and testing expectations.
 - [CLOUD_LOGGING_ARCHITECTURE.md](CLOUD_LOGGING_ARCHITECTURE.md) diagrams the AWS/GCP evidence paths and compares coverage, routing, retention, integrity, delivery health, cost, and review trade-offs.
-- [FINOPS_CONTROL_GUIDE.md](FINOPS_CONTROL_GUIDE.md) explains allocation, budgets and anomalies, reliability-aware optimization, provider mappings, and interview talking points.
+- [FINOPS_CONTROL_GUIDE.md](FINOPS_CONTROL_GUIDE.md) explains allocation, budgets and anomalies, reliability-aware optimization, provider mappings, and review questions.
 - [PROVIDER_EVIDENCE_MODEL.md](PROVIDER_EVIDENCE_MODEL.md) defines provider fields, coverage semantics, the current migration, and deferred collector work.
 - [SECURITY.md](SECURITY.md) defines safe reporting, sensitive-data rules, and requirements for future cloud collectors.
 - [AGENTS.md](AGENTS.md) keeps the repository workflow and engineering guardrails durable across future work sessions.
