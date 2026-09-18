@@ -12,10 +12,10 @@
 From the repository root:
 
 ```bash
-python3 scripts/validate_controls.py
-python3 scripts/generate_report.py
-python3 -m unittest discover -s tests
+make verify
 ```
+
+`make verify` uses strict warnings, checks generated-report drift, and runs all tests. Use the individual Python commands only when diagnosing one stage.
 
 ## Security Rules
 

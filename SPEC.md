@@ -25,6 +25,11 @@ Current project state:
 - Python validation script
 - Python Markdown report generator
 - Unittest coverage for validation and report generation
+- Command-line support for reproducible review dates, strict warnings, and custom report paths
+- Controlled YAML and file-loading errors
+- Atomic report writes
+- One-command local verification through `make verify`
+- GitHub Actions verification and weekly Dependabot checks
 - Generated sample report
 - Local git repository with `main` as the stable default branch
 - GitHub remote configured as `origin`
@@ -50,6 +55,10 @@ Current project state:
 
 ```text
 mock_cloud_trust_controls/
+├── .github/
+│   ├── dependabot.yml
+│   └── workflows/verify.yml
+├── .python-version
 ├── AGENTS.md
 ├── README.md
 ├── SPEC.md
@@ -57,6 +66,7 @@ mock_cloud_trust_controls/
 ├── DESIGN_PRINCIPLES.md
 ├── ROADMAP.md
 ├── SECURITY.md
+├── Makefile
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -198,6 +208,7 @@ The validator checks:
 - evidence collection dates and exception expiry dates use ISO `YYYY-MM-DD` format
 - approved exceptions have not passed their expiry dates
 - approved exceptions expiring within 30 days produce a non-blocking review warning
+- invalid YAML and unreadable required files produce controlled validation errors
 - evidence records reference known controls
 - exception records reference known controls
 - evidence and exception IDs are duplicate-checked
@@ -230,6 +241,8 @@ It writes:
 reports/sample_report.md
 ```
 
+The output path can be changed with `--output`. Report writes use a temporary file in the destination directory followed by an atomic replacement so failed writes do not truncate the last valid report.
+
 The report includes:
 
 - total controls reviewed
@@ -249,8 +262,8 @@ The report includes:
 
 Runtime:
 
-- Python 3
-- PyYAML
+- Python 3.12
+- PyYAML 6.0.3
 
 Install dependencies from:
 

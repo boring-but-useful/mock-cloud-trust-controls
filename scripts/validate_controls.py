@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
 import re
 import sys
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
+from typing import Sequence
 
 import yaml
 
@@ -63,6 +65,10 @@ ISO_DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 EXCEPTION_EXPIRY_WARNING_DAYS = 30
 
 
+class DataLoadError(Exception):
+    """Raised when project data cannot be loaded safely."""
+
+
 @dataclass(frozen=True)
 class ValidationResult:
     counts: dict[str, int]
@@ -75,8 +81,21 @@ class ValidationResult:
 
 
 def load_yaml(path: Path) -> object:
-    with path.open("r", encoding="utf-8") as handle:
-        return yaml.safe_load(handle)
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            return yaml.safe_load(handle)
+    except OSError as error:
+        detail = error.strerror or error.__class__.__name__
+        raise DataLoadError(
+            f"{path.name}: unable to read file ({detail})"
+        ) from error
+    except yaml.YAMLError as error:
+        mark = getattr(error, "problem_mark", None)
+        location = ""
+        if mark is not None:
+            location = f" at line {mark.line + 1}, column {mark.column + 1}"
+        # Avoid echoing source content that might contain sensitive data.
+        raise DataLoadError(f"{path.name}: invalid YAML{location}") from error
 
 
 def expected_type_name(expected_type: type | tuple[type, ...]) -> str:
@@ -97,9 +116,21 @@ def parse_iso_date(value: object) -> date | None:
         return None
 
 
+def parse_date_argument(value: str) -> date:
+    parsed = parse_iso_date(value)
+    if parsed is None:
+        raise argparse.ArgumentTypeError(
+            f"'{value}' must be an ISO date (YYYY-MM-DD)"
+        )
+    return parsed
+
+
 def validate_control(path: Path) -> tuple[dict, list[str]]:
     errors: list[str] = []
-    data = load_yaml(path)
+    try:
+        data = load_yaml(path)
+    except DataLoadError as error:
+        return {}, [str(error)]
     if not isinstance(data, dict):
         return {}, [f"{path.name}: control file must contain a YAML mapping"]
 
@@ -217,7 +248,11 @@ def load_reference_items(
     root_key: str,
     errors: list[str],
 ) -> list[dict]:
-    data = load_yaml(path)
+    try:
+        data = load_yaml(path)
+    except DataLoadError as error:
+        errors.append(str(error))
+        return []
     if not isinstance(data, dict):
         errors.append(f"{path.name}: root must be a YAML mapping")
         return []
@@ -289,8 +324,26 @@ def validate_project(as_of: date | None = None) -> ValidationResult:
     return ValidationResult(counts, tuple(errors), tuple(warnings))
 
 
-def main() -> int:
-    result = validate_project()
+def build_argument_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Validate mock cloud controls, evidence, and exceptions."
+    )
+    parser.add_argument(
+        "--as-of",
+        type=parse_date_argument,
+        help="Evaluate time-sensitive rules as of YYYY-MM-DD (default: today).",
+    )
+    parser.add_argument(
+        "--strict-warnings",
+        action="store_true",
+        help="Return a failure status when otherwise valid data has warnings.",
+    )
+    return parser
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = build_argument_parser().parse_args(argv)
+    result = validate_project(args.as_of)
 
     if not result.is_valid:
         print("Validation failed:")
@@ -306,6 +359,12 @@ def main() -> int:
     print(f"Validated {result.counts['controls']} controls")
     print(f"Validated {result.counts['evidence_items']} evidence items")
     print(f"Validated {result.counts['exceptions']} exceptions")
+    if args.strict_warnings and result.warnings:
+        print(
+            "Validation failed because --strict-warnings was set and "
+            f"{len(result.warnings)} warning(s) were found."
+        )
+        return 1
     return 0
 
 

@@ -20,6 +20,10 @@ The project is public-safe. It uses synthetic controls, synthetic evidence, and 
 
 ```text
 mock_cloud_trust_controls/
+├── .github/
+│   ├── dependabot.yml
+│   └── workflows/verify.yml
+├── .python-version
 ├── AGENTS.md
 ├── README.md
 ├── SPEC.md
@@ -27,6 +31,7 @@ mock_cloud_trust_controls/
 ├── DESIGN_PRINCIPLES.md
 ├── ROADMAP.md
 ├── SECURITY.md
+├── Makefile
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -212,10 +217,13 @@ For evidence and exceptions, it validates:
 - collection and expiry dates use ISO `YYYY-MM-DD` format
 - approved exceptions have not passed their expiry dates
 - approved exceptions expiring within 30 days produce a non-blocking warning
+- invalid YAML and missing inputs become controlled errors without source-content echoes
 - IDs are not duplicated
 - each item references a known `control_id`
 
 If anything fails, the validator prints every error and returns exit code `1`. If everything passes, it prints the counts and returns `0`.
+
+`--as-of` makes time-based review behavior reproducible. `--strict-warnings` changes an otherwise successful warning result into exit code `1` for CI and policy enforcement.
 
 ## Report Generator
 
@@ -263,6 +271,8 @@ Then it builds a Markdown report as a list of strings and writes:
 ```text
 reports/sample_report.md
 ```
+
+The generator validates before loading report data. It writes through a temporary file in the destination directory, flushes it, and atomically replaces the destination. `--output` selects another destination, while `--strict-warnings` prevents report creation when warnings exist.
 
 The report includes:
 
@@ -320,3 +330,5 @@ The report is generated output, but it is intentionally committed for now becaus
 ## Roadmap And Current Work
 
 The staged implementation plan and its completion criteria live in [ROADMAP.md](ROADMAP.md). The current engineering slice adds stricter date and status validation, expired-exception handling, and validation before report generation.
+
+The hardening checkpoint also adds a one-command `make verify` workflow, GitHub Actions verification, exact dependency pinning, weekly Dependabot checks, reproducible date options, strict warning mode, controlled input errors, and atomic report writes.

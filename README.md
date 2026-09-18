@@ -8,6 +8,10 @@ The project starts with readable YAML control definitions, mock evidence, except
 
 ```text
 mock_cloud_trust_controls/
+├── .github/
+│   ├── dependabot.yml
+│   └── workflows/verify.yml
+├── .python-version
 ├── AGENTS.md
 ├── README.md
 ├── SPEC.md
@@ -15,6 +19,7 @@ mock_cloud_trust_controls/
 ├── DESIGN_PRINCIPLES.md
 ├── ROADMAP.md
 ├── SECURITY.md
+├── Makefile
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -60,12 +65,48 @@ From this directory:
 
 ```bash
 python3 -m pip install -r requirements.txt
-python3 scripts/validate_controls.py
-python3 scripts/generate_report.py
-python3 -m unittest discover -s tests
+make verify
 ```
 
-The validator checks required fields and types, duplicate IDs, allowed statuses, ISO dates, expired exceptions, evidence samples, and control references. Valid but time-sensitive conditions are emitted as non-blocking review warnings. The report generator validates its input before writing `reports/sample_report.md`.
+For an isolated local environment:
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements.txt
+make verify
+```
+
+On Debian or Ubuntu, install the distribution's `python3-venv` package first if virtual-environment creation reports that `ensurepip` is unavailable.
+
+`make verify` runs strict validation, regenerates the sample report, checks the committed report for drift, and runs the complete test suite.
+
+Individual commands remain available:
+
+```bash
+make validate
+make report
+make test
+```
+
+The validator checks required fields and types, duplicate IDs, allowed statuses, ISO dates, expired exceptions, evidence samples, and control references. Valid but time-sensitive conditions are emitted as non-blocking review warnings. Invalid YAML and missing inputs produce controlled errors instead of tracebacks.
+
+Useful command-line options:
+
+```bash
+# Reproduce a review as of a specific date.
+python3 scripts/validate_controls.py --as-of 2026-09-18
+
+# Treat warnings as failures in automation.
+python3 scripts/validate_controls.py --strict-warnings
+
+# Write a report to another location without risking partial output.
+python3 scripts/generate_report.py --output build/review/report.md
+```
+
+The report generator validates its input before writing and replaces the destination atomically, preserving the previous report if validation or writing fails.
+
+GitHub Actions runs `make verify` for pull requests and pushes to `main`. Dependabot checks the pinned Python dependency and pinned GitHub Actions weekly.
 
 ## Security And Design
 

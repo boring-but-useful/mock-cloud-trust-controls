@@ -21,6 +21,19 @@ def copy_project(tmp_path: Path) -> Path:
     return project_copy
 
 
+def run_generator(
+    project_root: Path,
+    *arguments: str,
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        [sys.executable, "scripts/generate_report.py", *arguments],
+        cwd=project_root,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+
+
 class GenerateReportTests(unittest.TestCase):
     def test_generate_report_writes_expected_markdown(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -28,13 +41,7 @@ class GenerateReportTests(unittest.TestCase):
             report_path = project_copy / "reports" / "sample_report.md"
             report_path.unlink()
 
-            result = subprocess.run(
-                [sys.executable, "scripts/generate_report.py"],
-                cwd=project_copy,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
+            result = run_generator(project_copy)
 
             self.assertEqual(result.returncode, 0)
             self.assertEqual(result.stdout.strip(), "Wrote reports/sample_report.md")
@@ -63,7 +70,7 @@ class GenerateReportTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_copy = copy_project(Path(tmp_dir))
             report_path = project_copy / "reports" / "sample_report.md"
-            report_path.unlink()
+            report_path.write_text("existing valid report\n", encoding="utf-8")
             evidence_path = project_copy / "examples" / "mock_evidence.yaml"
             evidence = yaml.safe_load(evidence_path.read_text(encoding="utf-8"))
             evidence["evidence_items"][0]["status"] = "unknown"
@@ -72,20 +79,17 @@ class GenerateReportTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = subprocess.run(
-                [sys.executable, "scripts/generate_report.py"],
-                cwd=project_copy,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
+            result = run_generator(project_copy)
 
             self.assertEqual(result.returncode, 1)
             self.assertIn(
                 "Report generation stopped because validation failed:",
                 result.stdout,
             )
-            self.assertFalse(report_path.exists())
+            self.assertEqual(
+                report_path.read_text(encoding="utf-8"),
+                "existing valid report\n",
+            )
 
     def test_generate_report_includes_non_blocking_warning(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
@@ -99,13 +103,7 @@ class GenerateReportTests(unittest.TestCase):
                 encoding="utf-8",
             )
 
-            result = subprocess.run(
-                [sys.executable, "scripts/generate_report.py"],
-                cwd=project_copy,
-                text=True,
-                capture_output=True,
-                check=False,
-            )
+            result = run_generator(project_copy)
 
             self.assertEqual(result.returncode, 0)
             report = (project_copy / "reports" / "sample_report.md").read_text(
@@ -116,6 +114,39 @@ class GenerateReportTests(unittest.TestCase):
                 f"approved exception expires in 10 days on {expires_on.isoformat()}",
                 report,
             )
+
+    def test_generate_report_supports_custom_output_path(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            output_path = project_copy / "build" / "review" / "report.md"
+
+            result = run_generator(
+                project_copy,
+                "--output",
+                str(output_path),
+            )
+
+            self.assertEqual(result.returncode, 0)
+            self.assertEqual(result.stdout.strip(), "Wrote build/review/report.md")
+            self.assertTrue(output_path.exists())
+
+    def test_generate_report_strict_warnings_does_not_write(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            output_path = project_copy / "build" / "strict-report.md"
+
+            result = run_generator(
+                project_copy,
+                "--as-of",
+                "2027-09-01",
+                "--strict-warnings",
+                "--output",
+                str(output_path),
+            )
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("--strict-warnings was set", result.stdout)
+            self.assertFalse(output_path.exists())
 
 
 if __name__ == "__main__":
