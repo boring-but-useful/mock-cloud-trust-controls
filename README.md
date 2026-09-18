@@ -6,6 +6,10 @@ The project starts with readable YAML control definitions, mock evidence, except
 
 This is a personal portfolio and learning project. External feedback is welcome, but the project is not maintained as a community-supported compliance product.
 
+## AI-Assisted Development
+
+This project was developed with AI-assisted tooling for research, design exploration, implementation support, documentation, and review. Project direction, architecture decisions, testing requirements, and final changes are reviewed and owned by the maintainer.
+
 ## Project Structure
 
 ```text
