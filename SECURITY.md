@@ -46,3 +46,12 @@ Collectors must:
 - run no live calls during imports or tests
 
 See [DESIGN_PRINCIPLES.md](DESIGN_PRINCIPLES.md) for the architectural rules that support these requirements.
+
+## Build And Dependency Security
+
+- Runtime dependencies are pinned and updated through reviewed pull requests.
+- GitHub Actions are pinned to full commit identifiers.
+- Workflow permissions default to read-only repository contents.
+- Checkout credentials are not persisted after the checkout step.
+- CI runs without repository or cloud secrets.
+- Dependabot checks Python and GitHub Actions dependencies weekly.

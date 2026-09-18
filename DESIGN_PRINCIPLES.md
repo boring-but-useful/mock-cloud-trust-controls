@@ -63,11 +63,15 @@ Given the same validated fixtures and reference date, report output should be st
 
 Generated artifacts belong in the same change as the inputs or code that produced them.
 
+Write generated artifacts through a temporary file in the destination directory and replace the destination atomically. Failed validation or writes must preserve the last valid report.
+
 ## Keep Dependencies Small
 
 Use the Python standard library when it is clear and sufficient. Add a runtime dependency only when it removes meaningful complexity or risk. Pin supported version ranges and review transitive dependencies before adoption.
 
 Provider SDKs should not become core dependencies until live collectors are implemented.
+
+Pin executable CI actions to reviewed commit identifiers, grant workflows read-only permissions by default, and use automated update pull requests to keep pins reviewable and current.
 
 ## Design For Testability
 

@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import argparse
+import os
+import tempfile
 from collections import Counter, defaultdict
 from pathlib import Path
+from typing import Sequence
 
-import yaml
-
-from validate_controls import validate_project
+from validate_controls import (
+    DataLoadError,
+    load_yaml,
+    parse_date_argument,
+    validate_project,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -14,11 +21,6 @@ CONTROLS_DIR = PROJECT_ROOT / "controls"
 EVIDENCE_FILE = PROJECT_ROOT / "examples" / "mock_evidence.yaml"
 EXCEPTIONS_FILE = PROJECT_ROOT / "examples" / "mock_exceptions.yaml"
 REPORT_FILE = PROJECT_ROOT / "reports" / "sample_report.md"
-
-
-def load_yaml(path: Path) -> object:
-    with path.open("r", encoding="utf-8") as handle:
-        return yaml.safe_load(handle)
 
 
 def load_controls() -> list[dict]:
@@ -30,18 +32,81 @@ def load_controls() -> list[dict]:
     return controls
 
 
-def main() -> int:
+def build_argument_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Generate a Markdown report from validated project data."
+    )
+    parser.add_argument(
+        "--as-of",
+        type=parse_date_argument,
+        help="Evaluate time-sensitive rules as of YYYY-MM-DD (default: today).",
+    )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Write to this path instead of reports/sample_report.md.",
+    )
+    parser.add_argument(
+        "--strict-warnings",
+        action="store_true",
+        help="Do not write a report when otherwise valid data has warnings.",
+    )
+    return parser
+
+
+def write_text_atomically(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            delete=False,
+        ) as handle:
+            temporary_path = Path(handle.name)
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary_path, path)
+    except OSError:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
+        raise
+
+
+def display_path(path: Path) -> Path:
+    try:
+        return path.relative_to(PROJECT_ROOT)
+    except ValueError:
+        return path
+
+
+def main(argv: Sequence[str] | None = None) -> int:
+    args = build_argument_parser().parse_args(argv)
+    report_file = args.output.resolve() if args.output else REPORT_FILE
+
     # Refuse to publish reports from invalid source data.
-    validation = validate_project()
+    validation = validate_project(args.as_of)
     if not validation.is_valid:
         print("Report generation stopped because validation failed:")
         for error in validation.errors:
             print(f"- {error}")
         return 1
+    if args.strict_warnings and validation.warnings:
+        print("Report generation stopped because --strict-warnings was set:")
+        for warning in validation.warnings:
+            print(f"- {warning}")
+        return 1
 
-    controls = load_controls()
-    evidence_data = load_yaml(EVIDENCE_FILE)
-    exception_data = load_yaml(EXCEPTIONS_FILE)
+    try:
+        controls = load_controls()
+        evidence_data = load_yaml(EVIDENCE_FILE)
+        exception_data = load_yaml(EXCEPTIONS_FILE)
+    except DataLoadError as error:
+        print(f"Report generation stopped: {error}")
+        return 1
 
     evidence_items = (
         evidence_data.get("evidence_items", [])
@@ -173,8 +238,15 @@ def main() -> int:
 
         lines.append("")
 
-    REPORT_FILE.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
-    print(f"Wrote {REPORT_FILE.relative_to(PROJECT_ROOT)}")
+    content = "\n".join(lines).rstrip() + "\n"
+    try:
+        write_text_atomically(report_file, content)
+    except OSError as error:
+        detail = error.strerror or error.__class__.__name__
+        print(f"Report generation stopped: unable to write report ({detail})")
+        return 1
+
+    print(f"Wrote {display_path(report_file)}")
     return 0
 
 

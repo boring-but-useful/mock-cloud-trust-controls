@@ -21,9 +21,12 @@ def copy_project(tmp_path: Path) -> Path:
     return project_copy
 
 
-def run_validator(project_root: Path) -> subprocess.CompletedProcess[str]:
+def run_validator(
+    project_root: Path,
+    *arguments: str,
+) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, "scripts/validate_controls.py"],
+        [sys.executable, "scripts/validate_controls.py", *arguments],
         cwd=project_root,
         text=True,
         capture_output=True,
@@ -187,6 +190,58 @@ class ValidateControlsTests(unittest.TestCase):
                 "mock_evidence.yaml: 'evidence_items' must be a list",
                 result.stdout,
             )
+
+    def test_validate_controls_reports_invalid_yaml_without_traceback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            control_path = project_copy / "controls" / "MCTC-IAM-01.yaml"
+            control_path.write_text("control_id: [", encoding="utf-8")
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn("MCTC-IAM-01.yaml: invalid YAML", result.stdout)
+            self.assertNotIn("Traceback", result.stdout + result.stderr)
+
+    def test_validate_controls_reports_missing_input_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            (project_copy / "examples" / "mock_evidence.yaml").unlink()
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 1)
+            self.assertIn(
+                "mock_evidence.yaml: unable to read file",
+                result.stdout,
+            )
+            self.assertNotIn("Traceback", result.stdout + result.stderr)
+
+    def test_as_of_date_and_strict_warnings_are_reproducible(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+
+            normal = run_validator(project_copy, "--as-of", "2027-09-01")
+            strict = run_validator(
+                project_copy,
+                "--as-of",
+                "2027-09-01",
+                "--strict-warnings",
+            )
+
+            self.assertEqual(normal.returncode, 0)
+            self.assertIn("expires in 17 days", normal.stdout)
+            self.assertEqual(strict.returncode, 1)
+            self.assertIn("--strict-warnings was set", strict.stdout)
+
+    def test_invalid_as_of_date_is_a_usage_error(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+
+            result = run_validator(project_copy, "--as-of", "September-1")
+
+            self.assertEqual(result.returncode, 2)
+            self.assertIn("must be an ISO date", result.stderr)
 
 
 if __name__ == "__main__":

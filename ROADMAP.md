@@ -54,6 +54,16 @@ Completion criteria:
 - Current sample data intentionally demonstrates at least one active and one expired exception.
 - Tests cover the new validation and reporting behavior.
 
+Hardening checkpoint completed after Phase 2:
+
+- Controlled invalid-YAML and missing-file errors
+- Reproducible `--as-of` reviews
+- Automation-friendly `--strict-warnings`
+- Configurable and atomic report output
+- One-command local verification and report-drift detection
+- Least-privilege GitHub Actions verification
+- Weekly Python and GitHub Actions dependency maintenance
+
 ## Phase 3 - Introduce A Multi-Cloud Evidence Model
 
 Goal: support AWS, Google Cloud, and provider-neutral evidence without duplicating common control intent.
