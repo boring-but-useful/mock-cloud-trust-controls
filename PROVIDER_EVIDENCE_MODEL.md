@@ -40,17 +40,18 @@ For each control:
 
 A gap is not automatically a failed control. It is an explicit statement that the current sample does not demonstrate that declared evidence path. Evidence `status` continues to describe the result of an evidence record that actually exists.
 
-## Current Migration
+## Current Evidence Set
 
-The seven existing records were classified without changing their control intent:
+The current thirteen records preserve provider-neutral control intent while showing provider-specific collection paths:
 
-- AWS IAM, CloudTrail, Config, and Security Hub records use `provider: aws`.
+- AWS IAM, CloudTrail, S3, Config, Security Hub, budget, and optimization records use `provider: aws`.
 - Identity-provider, source-control/CI, and control-repository records use `provider: common`.
+- SIEM ingestion and saved-query records use `provider: common` even when their sampled events originated in AWS.
 - Production cloud records use `environment: production`.
 - Shared engineering and evidence systems use `environment: shared`.
 - All scopes and resource references are synthetic and public-safe.
 
-`MCTC-LOG-01` now declares Google Cloud Audit Logs as a GCP evidence source. No GCP evidence record was invented during migration, so reports correctly show that provider as a coverage gap.
+`MCTC-LOG-01` has complete AWS and common evidence paths. It declares Google Cloud Audit Logs as a GCP source, but no GCP record is invented before the planned vertical slice, so reports correctly preserve that provider gap.
 
 ## Reporting
 
@@ -62,7 +63,7 @@ Committed sample reports use the fixed `SAMPLE_AS_OF` date from the `Makefile` s
 
 ## Deferred Work
 
-- Richer AWS evidence records belong to Phase 4.
+- Richer AWS evidence for controls beyond `MCTC-LOG-01` can follow the same Phase 4 pattern later.
 - The first real GCP evidence record belongs to the `MCTC-LOG-01` vertical slice in Phase 5.
 - Provider SDKs and live read-only collection belong to Phase 6.
 - A generalized collector interface should wait until two concrete collectors reveal a stable common contract.

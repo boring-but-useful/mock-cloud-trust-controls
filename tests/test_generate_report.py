@@ -59,7 +59,7 @@ class GenerateReportTests(unittest.TestCase):
             self.assertIn("# Mock Cloud Trust Controls - Sample Report", report)
             self.assertIn("- Review date: 2026-09-18", report)
             self.assertIn("- Controls reviewed: 10", report)
-            self.assertIn("- Evidence items: 10", report)
+            self.assertIn("- Evidence items: 13", report)
             self.assertIn("- Exceptions: 4", report)
             self.assertIn("## Review Warnings", report)
             self.assertIn("- No validation warnings.", report)
@@ -71,19 +71,29 @@ class GenerateReportTests(unittest.TestCase):
             self.assertIn("## Expired Exceptions", report)
             self.assertIn("EX-NET-001 (MCTC-NET-01, expired 2026-08-15)", report)
             self.assertIn("## Evidence By Provider", report)
-            self.assertIn("- aws: 6 (needs_review: 3, pass: 3)", report)
+            self.assertIn("- aws: 7 (needs_review: 4, pass: 3)", report)
+            self.assertIn("- common: 6 (needs_review: 2, pass: 4)", report)
             self.assertIn("- gcp: 0", report)
             self.assertIn("## Provider Coverage Gaps", report)
             self.assertIn(
-                "MCTC-LOG-01: missing gcp, common; current evidence: aws",
+                "MCTC-LOG-01: missing gcp; current evidence: aws, common",
                 report,
             )
             self.assertIn("## Evidence By Owner", report)
             self.assertIn("- Security / IT: 1 (needs_review: 1)", report)
+            self.assertIn(
+                "- Security / Platform: 5 (needs_review: 1, pass: 4)",
+                report,
+            )
             self.assertIn("MCTC-COST-01: Cloud Spend Is Allocated And Owned", report)
             self.assertIn("EX-COST-001 (MCTC-COST-03, expires 2026-12-31)", report)
             self.assertIn(
                 "MCTC-VULN-01: Vulnerability Findings Are Triaged And Remediated",
+                report,
+            )
+            self.assertIn(
+                "EV-LOG-002 [aws; production; organization/example-cloud] "
+                "(needs_review)",
                 report,
             )
 
@@ -185,6 +195,23 @@ class GenerateReportTests(unittest.TestCase):
             self.assertEqual(iam_control["exception_count"], "1")
             self.assertIn("EX-IAM-001 (approved", iam_control["exceptions"])
 
+            logging_control = next(
+                row for row in rows if row["control_id"] == "MCTC-LOG-01"
+            )
+            self.assertEqual(logging_control["evidence_count"], "4")
+            self.assertEqual(
+                logging_control["evidence_providers"],
+                "aws; common",
+            )
+            self.assertEqual(
+                logging_control["missing_evidence_providers"],
+                "gcp",
+            )
+            self.assertIn(
+                "EV-LOG-002 [aws] (needs_review)",
+                logging_control["evidence"],
+            )
+
     def test_generate_report_writes_complete_json(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             project_copy = copy_project(Path(tmp_dir))
@@ -203,11 +230,12 @@ class GenerateReportTests(unittest.TestCase):
             self.assertEqual(result.stdout.strip(), "Wrote reports/sample_report.json")
             report = json.loads(report_path.read_text(encoding="utf-8"))
             self.assertEqual(report["summary"]["controls_reviewed"], 10)
-            self.assertEqual(report["summary"]["evidence_items"], 10)
+            self.assertEqual(report["summary"]["evidence_items"], 13)
             self.assertEqual(report["summary"]["exceptions"], 4)
             self.assertEqual(report["as_of"], "2026-09-18")
             self.assertEqual(report["review_warnings"], [])
-            self.assertEqual(report["evidence_by_provider"]["aws"]["total"], 6)
+            self.assertEqual(report["evidence_by_provider"]["aws"]["total"], 7)
+            self.assertEqual(report["evidence_by_provider"]["common"]["total"], 6)
             self.assertEqual(report["evidence_by_provider"]["gcp"]["total"], 0)
             self.assertEqual(report["evidence_by_owner"]["Security / IT"]["total"], 1)
 
@@ -224,6 +252,18 @@ class GenerateReportTests(unittest.TestCase):
                 iam_control["exceptions"][0]["expires_on"],
                 "2027-09-18",
             )
+
+            logging_control = next(
+                control
+                for control in report["controls"]
+                if control["control_id"] == "MCTC-LOG-01"
+            )
+            self.assertEqual(len(logging_control["evidence"]), 4)
+            self.assertEqual(
+                logging_control["evidence_providers"],
+                ["aws", "common"],
+            )
+            self.assertEqual(logging_control["missing_evidence_providers"], ["gcp"])
 
     def test_generate_report_strict_warnings_does_not_write(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

@@ -237,7 +237,7 @@ Current expected output:
 
 ```text
 Validated 10 controls
-Validated 10 evidence items
+Validated 13 evidence items
 Validated 4 exceptions
 ```
 
