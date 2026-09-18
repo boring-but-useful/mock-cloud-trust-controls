@@ -13,7 +13,7 @@ AWS and Google Cloud should usually provide different evidence for the same cont
 ## Current Baseline
 
 - Ten YAML control definitions
-- Ten synthetic evidence records
+- Thirteen synthetic evidence records
 - Four synthetic exception records
 - Local validation and Markdown, CSV, and JSON report generation
 - Provider-aware evidence provenance and coverage-gap reporting
@@ -96,6 +96,8 @@ Implemented behavior:
 
 Goal: replace one-record summaries with richer synthetic evidence that demonstrates review judgment.
 
+Status: complete for the first AWS logging vertical slice.
+
 Initial sources:
 
 - AWS IAM and the configured identity provider
@@ -105,6 +107,15 @@ Initial sources:
 - Terraform, source-control, and CI/CD evidence
 
 The fixtures should include passing evidence, review-needed evidence, missing coverage, and time-bound exceptions.
+
+Completed scope:
+
+- [x] Split the broad `MCTC-LOG-01` record into CloudTrail configuration, S3 archive, SIEM ingestion, and saved-query evidence.
+- [x] Demonstrate both passing evidence and a review-needed retention gap without inventing an exception for a control that prohibits one.
+- [x] Complete the AWS and common evidence paths while preserving Google Cloud as the explicit provider gap.
+- [x] Update validation expectations, generated reports, and documentation for the richer fixture set.
+
+IAM, AWS Config, Security Hub, and infrastructure-change evidence can receive the same treatment later. They are not prerequisites for the focused Google Cloud logging slice.
 
 ## FinOps Interview-Practice Checkpoint
 
@@ -176,4 +187,4 @@ Planned work:
 
 ## Immediate Next Action
 
-Review and merge the Phase 3 provider-aware evidence work, then deepen the AWS fixtures in Phase 4. Start with `MCTC-LOG-01` so the following branch can add the matching Google Cloud Audit Logs vertical slice without changing the control objective.
+Add the matching Google Cloud Audit Logs evidence for `MCTC-LOG-01`. Preserve the provider-neutral objective, document AWS/GCP differences, and make the combined report show complete AWS, GCP, and common coverage for this control.

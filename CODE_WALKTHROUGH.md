@@ -194,7 +194,7 @@ Expected output:
 
 ```text
 Validated 10 controls
-Validated 10 evidence items
+Validated 13 evidence items
 Validated 4 exceptions
 ```
 
@@ -335,18 +335,38 @@ Current summary:
 
 ```text
 Controls reviewed: 10
-Evidence items: 10
+Evidence items: 13
 Exceptions: 4
 ```
 
 Current evidence status counts:
 
 ```text
-pass: 5
-needs_review: 5
+pass: 7
+needs_review: 6
 ```
 
 The report is generated output, but it is intentionally committed for now because it shows what the tool produces without requiring someone to run the script first.
+
+## AWS Logging Evidence Example
+
+`MCTC-LOG-01` uses four records so one passing configuration cannot hide a separate retention or queryability problem:
+
+| Evidence | Provider | Status | Reviewer question |
+|---|---|---|---|
+| CloudTrail organization trail | AWS | `pass` | Does a multi-Region trail cover member accounts, read/write management events, encryption, and log-file validation? |
+| Central S3 archive | AWS | `needs_review` | Is the archive private, source-restricted, encrypted, versioned, and retained for the documented period? |
+| SIEM ingestion | Common | `pass` | Are recent events arriving from the expected accounts and Regions within the ingestion objective? |
+| Saved administrative-event query | Common | `pass` | Can a reviewer retrieve useful actor, account, Region, source, and event-time fields? |
+
+The synthetic S3 record intentionally retains logs for 180 days against a 365-day requirement. The framework reports that record as `needs_review`; it does not create an exception because the control explicitly prohibits production logging exceptions.
+
+The AWS baseline follows current official guidance for organization and multi-Region trails, read/write management events, SSE-KMS, log-file validation, protected S3 delivery, and monitoring/queryability:
+
+- [AWS CloudTrail concepts](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-concepts.html)
+- [AWS CloudTrail data protection](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/data-protection.html)
+- [AWS Security Hub CloudTrail controls](https://docs.aws.amazon.com/securityhub/latest/userguide/cloudtrail-controls.html)
+- [Monitoring CloudTrail with CloudWatch Logs](https://docs.aws.amazon.com/awscloudtrail/latest/userguide/monitor-cloudtrail-log-files-with-cloudwatch-logs.html)
 
 ## Current Design Choices
 

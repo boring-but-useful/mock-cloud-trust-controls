@@ -66,6 +66,7 @@ control intent -> requirement -> evidence -> test -> exception -> report
 ## Current Scope
 
 - Ten starter controls, including three FinOps and cost-governance controls
+- Thirteen synthetic evidence records, including a four-record AWS logging review
 - YAML control definitions
 - Mock evidence and exception examples
 - Provider-aware evidence provenance, scope, environment, and coverage gaps
