@@ -71,6 +71,54 @@ evidence_items:
     owner: Security / Platform
     status: pass
     summary: The saved query returned expected administrative events with account, Region, actor, source, and event-time fields available for investigation.
+  - evidence_id: EV-LOG-005
+    control_id: MCTC-LOG-01
+    provider: gcp
+    scope: organization/example-google-cloud
+    environment: production
+    resource_ref: gcp://logging/example-google-cloud/audit-config
+    source_system: Google Cloud Audit Logs
+    collection_method: Exported organization audit configuration and sampled Admin Activity, System Event, Policy Denied, and Data Access settings for critical services.
+    collection_date: 2026-09-18
+    owner: Security / Platform
+    status: needs_review
+    summary: Required audit logs are present and Data Access is enabled for designated services, but a newly adopted service lacks inherited DATA_READ coverage and needs owner and cost review.
+  - evidence_id: EV-LOG-006
+    control_id: MCTC-LOG-01
+    provider: gcp
+    scope: organization/example-google-cloud
+    environment: production
+    resource_ref: gcp://logging/example-google-cloud/sink/central-audit
+    source_system: Google Cloud Log Router
+    collection_method: Exported organization aggregated-sink scope, filters, exclusions, destination, writer identity, and destination IAM binding.
+    collection_date: 2026-09-18
+    owner: Security / Platform
+    status: pass
+    summary: The non-intercepting organization sink includes child resources, routes all audit-log types to the central project, has no security-log exclusions, and its dedicated writer can reach the destination.
+  - evidence_id: EV-LOG-007
+    control_id: MCTC-LOG-01
+    provider: gcp
+    scope: project/example-central-logging
+    environment: production
+    resource_ref: gcp://logging/example-central-logging/bucket/central-audit
+    source_system: Google Cloud Logging
+    collection_method: Exported central log-bucket location, retention period, lock state, encryption setting, and bucket-level IAM access.
+    collection_date: 2026-09-18
+    owner: Security / Platform
+    status: pass
+    summary: The synthetic central bucket uses 365-day locked retention, customer-managed encryption, and restricted viewer access in the designated logging project.
+  - evidence_id: EV-LOG-008
+    control_id: MCTC-LOG-01
+    provider: gcp
+    scope: organization/example-google-cloud
+    environment: production
+    resource_ref: gcp://monitoring/example-google-cloud/log-router-health
+    source_system: Google Cloud Logging and Cloud Monitoring
+    collection_method: Reviewed sink entry and error metrics, then ran a timestamped Logs Explorer query against the central audit-log view.
+    collection_date: 2026-09-18
+    owner: Security / Platform
+    status: pass
+    summary: The sampled sink shows routed entries without export errors, and the central query returns expected actor, resource, service, method, and event-time fields.
   - evidence_id: EV-IAC-001
     control_id: MCTC-IAC-01
     provider: common

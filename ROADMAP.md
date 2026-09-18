@@ -13,7 +13,7 @@ AWS and Google Cloud should usually provide different evidence for the same cont
 ## Current Baseline
 
 - Ten YAML control definitions
-- Thirteen synthetic evidence records
+- Seventeen synthetic evidence records
 - Four synthetic exception records
 - Local validation and Markdown, CSV, and JSON report generation
 - Provider-aware evidence provenance and coverage-gap reporting
@@ -130,12 +130,22 @@ Status: complete.
 
 Goal: prove the multi-cloud model with one complete control before broadening coverage.
 
+Status: complete for `MCTC-LOG-01`.
+
 Start with `MCTC-LOG-01`:
 
 - AWS CloudTrail configuration and retention evidence
 - Google Cloud Audit Logs configuration, coverage, routing, and retention evidence
 - Provider-specific caveats documented beside the common control objective
 - Combined validation and reporting
+
+Completed scope:
+
+- [x] Add organization-level Cloud Audit Logs configuration evidence with an explicit Data Access coverage gap.
+- [x] Add a non-intercepting aggregated sink with child-resource coverage, reviewed exclusions, and destination permission.
+- [x] Add a central Logging bucket with 365-day locked retention, customer-managed encryption, and restricted access.
+- [x] Add sink-health metrics and a timestamped central audit-log query.
+- [x] Document provider-specific behavior and make AWS, GCP, and common coverage complete for `MCTC-LOG-01`.
 
 Then add:
 
@@ -187,4 +197,4 @@ Planned work:
 
 ## Immediate Next Action
 
-Add the matching Google Cloud Audit Logs evidence for `MCTC-LOG-01`. Preserve the provider-neutral objective, document AWS/GCP differences, and make the combined report show complete AWS, GCP, and common coverage for this control.
+Add the small architecture diagram and AWS/GCP comparison walkthrough from Phase 7. Use the completed `MCTC-LOG-01` evidence path as the concrete example, then evaluate optional read-only collectors without committing to a shared abstraction prematurely.

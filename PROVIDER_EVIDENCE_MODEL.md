@@ -42,16 +42,17 @@ A gap is not automatically a failed control. It is an explicit statement that th
 
 ## Current Evidence Set
 
-The current thirteen records preserve provider-neutral control intent while showing provider-specific collection paths:
+The current seventeen records preserve provider-neutral control intent while showing provider-specific collection paths:
 
 - AWS IAM, CloudTrail, S3, Config, Security Hub, budget, and optimization records use `provider: aws`.
+- Google Cloud Audit Logs, Log Router, Logging bucket, and sink-health records use `provider: gcp`.
 - Identity-provider, source-control/CI, and control-repository records use `provider: common`.
 - SIEM ingestion and saved-query records use `provider: common` even when their sampled events originated in AWS.
 - Production cloud records use `environment: production`.
 - Shared engineering and evidence systems use `environment: shared`.
 - All scopes and resource references are synthetic and public-safe.
 
-`MCTC-LOG-01` has complete AWS and common evidence paths. It declares Google Cloud Audit Logs as a GCP source, but no GCP record is invented before the planned vertical slice, so reports correctly preserve that provider gap.
+`MCTC-LOG-01` now has complete AWS, GCP, and common evidence paths. Record-level `needs_review` findings remain visible even though provider coverage is complete; provider presence does not imply a passing control.
 
 ## Reporting
 
@@ -64,6 +65,6 @@ Committed sample reports use the fixed `SAMPLE_AS_OF` date from the `Makefile` s
 ## Deferred Work
 
 - Richer AWS evidence for controls beyond `MCTC-LOG-01` can follow the same Phase 4 pattern later.
-- The first real GCP evidence record belongs to the `MCTC-LOG-01` vertical slice in Phase 5.
+- Broader GCP evidence for IAM, network exposure, asset inventory, findings, and infrastructure change remains future work.
 - Provider SDKs and live read-only collection belong to Phase 6.
 - A generalized collector interface should wait until two concrete collectors reveal a stable common contract.
