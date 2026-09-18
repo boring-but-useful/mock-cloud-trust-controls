@@ -52,13 +52,11 @@ Low-risk cleanup may be automated. Rightsizing stateful or latency-sensitive sys
 
 The service names differ, but the control questions remain stable: what is expected, what was observed, who owns the decision, what risk constrains action, and how will the result be verified?
 
-## Interview Walkthrough
+## Review Approach
 
-A compact way to discuss the design:
+Start by making spend attributable, because optimization without ownership becomes a report nobody can act on. Add budgets, forecasts, and anomaly routing so material variance reaches an accountable team. Combine provider recommendations with service telemetry and change-management evidence. Automate low-risk cleanup, but do not blindly rightsize stateful or latency-sensitive systems without peak-load, resilience, and rollback analysis. Track both savings and reliability outcomes so FinOps does not become cost cutting at the expense of the platform.
 
-> I would start by making spend attributable, because optimization without ownership becomes a report nobody can act on. Then I would add budgets, forecasts, and anomaly routing so material variance reaches an accountable team. For optimization, I would combine provider recommendations with service telemetry and change-management evidence. I would automate low-risk cleanup, but I would not blindly rightsize stateful or latency-sensitive systems without peak-load, resilience, and rollback analysis. I would track both savings and reliability outcomes so FinOps does not become cost cutting at the expense of the platform.
-
-Useful follow-up questions:
+Review questions:
 
 - How much spend is currently allocated to a team, service, and environment?
 - Are shared platform costs charged back, shown back, or centrally funded?

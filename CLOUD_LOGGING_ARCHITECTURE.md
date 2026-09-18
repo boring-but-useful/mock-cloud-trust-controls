@@ -63,7 +63,7 @@ Use five questions in order:
 
 This order avoids a common failure: treating an enabled service or successfully created sink as proof that usable audit evidence exists.
 
-## Trade-Offs To Say Out Loud
+## Main Trade-Offs
 
 - More event coverage improves investigation depth but increases ingestion, storage, and analysis cost.
 - Centralization improves review and correlation but creates a high-value destination requiring strict access and resilient key management.
@@ -71,9 +71,9 @@ This order avoids a common failure: treating an enabled service or successfully 
 - Provider-native storage is simpler; forwarding to a common SIEM improves correlation but adds another permission, delivery, and cost boundary.
 - A shared control objective improves governance consistency, while provider-specific evidence preserves technical truth.
 
-## Concise Interview Walkthrough
+## Example Review Approach
 
-> I start with the evidence outcome rather than assuming CloudTrail and Cloud Audit Logs are interchangeable. In AWS I would verify an organization-wide multi-Region trail, event selectors, protected S3 delivery, validation, retention, and a recent query. In Google Cloud I would verify the audit configuration, Data Access choices, an organization aggregated sink, writer permissions, locked retention where justified, export health, and a central query. I normalize the review result, not the provider API. I also keep coverage separate from status: having GCP evidence does not make it pass if an important service is still missing Data Access coverage.
+Start with the evidence outcome rather than assuming CloudTrail and Cloud Audit Logs are interchangeable. For AWS, verify an organization-wide multi-Region trail, event selectors, protected S3 delivery, validation, retention, and a recent query. For Google Cloud, verify the audit configuration, Data Access choices, an organization aggregated sink, writer permissions, locked retention where justified, export health, and a central query. Normalize the review result rather than the provider API, and keep coverage separate from status: having GCP evidence does not make the control pass if an important service is still missing Data Access coverage.
 
 ## Current Boundaries
 
