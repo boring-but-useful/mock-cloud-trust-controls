@@ -10,10 +10,302 @@
       "reason": "A restricted emergency user is retained for account recovery testing.",
       "status": "approved",
       "title": "Break-glass IAM user retained for recovery testing"
+    },
+    {
+      "approved_by": "Platform and finance reviewer",
+      "compensating_control": "Utilization and latency are monitored, the cost impact is reviewed monthly, and the recommendation remains tracked with an accountable owner.",
+      "control_id": "MCTC-COST-03",
+      "exception_id": "EX-COST-001",
+      "expires_on": "2026-12-31",
+      "owner": "Platform / Finance / Application team",
+      "reason": "Rightsizing is deferred until representative peak-load and failover tests confirm safe capacity thresholds.",
+      "status": "approved",
+      "title": "Synthetic transaction database retains peak-capacity headroom"
     }
   ],
   "as_of": "2026-09-18",
   "controls": [
+    {
+      "automation_status": "Partial",
+      "control_id": "MCTC-COST-01",
+      "domain": "FinOps and cost governance",
+      "evidence": [
+        {
+          "collection_date": "2026-09-18",
+          "collection_method": "Calculated allocated, shared, and unallocated amortized spend for the review month.",
+          "control_id": "MCTC-COST-01",
+          "environment": "shared",
+          "evidence_id": "EV-COST-001",
+          "owner": "Platform / Finance",
+          "provider": "common",
+          "resource_ref": "common://cost-reporting/monthly-allocation",
+          "scope": "organization/example-company",
+          "source_system": "Cloud cost reporting pipeline",
+          "status": "needs_review",
+          "summary": "Ninety-two percent of sampled spend is allocated; shared observability costs still need an approved allocation rule."
+        }
+      ],
+      "evidence_owners": [
+        "Platform / Finance"
+      ],
+      "evidence_providers": [
+        "common"
+      ],
+      "evidence_sources": [
+        {
+          "collection_method": "Export amortized cost by account, service, allocation tag, and billing period.",
+          "name": "AWS cost and usage export",
+          "provider": "aws",
+          "system": "AWS Cost and Usage Report"
+        },
+        {
+          "collection_method": "Query cost by project, service, labels, and billing period.",
+          "name": "Google Cloud billing export",
+          "provider": "gcp",
+          "system": "Google Cloud Billing export"
+        },
+        {
+          "collection_method": "Map billing dimensions to accountable teams and services.",
+          "name": "Service ownership map",
+          "provider": "common",
+          "system": "Service catalog or ownership registry"
+        },
+        {
+          "collection_method": "Calculate allocated, shared, and unallocated spend percentages.",
+          "name": "Unallocated spend report",
+          "provider": "common",
+          "system": "Cost reporting pipeline"
+        }
+      ],
+      "exception_allowed": true,
+      "exception_requirements": [
+        "Named owner",
+        "Reason allocation is temporarily unavailable",
+        "Compensating allocation method",
+        "Remediation date"
+      ],
+      "exceptions": [],
+      "expected_evidence_providers": [
+        "aws",
+        "gcp",
+        "common"
+      ],
+      "missing_evidence_providers": [
+        "aws",
+        "gcp"
+      ],
+      "objective": "Make cloud spend attributable to accountable teams, services, and environments.",
+      "owner": "Platform / Finance / Service owners",
+      "related_frameworks": [
+        "FinOps practice"
+      ],
+      "requirement": "Cloud spend must be assigned to a service or cost owner using billing dimensions, account or project structure, and approved allocation rules. Unallocated and shared costs must be measured, reviewed, and reduced over time.",
+      "review_cadence": "Monthly",
+      "risk": "Unowned or poorly allocated spend hides waste, weakens forecasts, and makes engineering cost decisions difficult to defend.",
+      "tags": [
+        "finops",
+        "cost-allocation",
+        "ownership",
+        "unit-economics"
+      ],
+      "test_method": "Review the largest cost categories and a sample of shared costs, then confirm each has an allocation rule, accountable owner, and follow-up path for gaps.",
+      "title": "Cloud Spend Is Allocated And Owned"
+    },
+    {
+      "automation_status": "Partial",
+      "control_id": "MCTC-COST-02",
+      "domain": "FinOps and cost governance",
+      "evidence": [
+        {
+          "collection_date": "2026-09-18",
+          "collection_method": "Reviewed budget thresholds, subscribers, anomaly monitors, and one closed cost-variance alert.",
+          "control_id": "MCTC-COST-02",
+          "environment": "production",
+          "evidence_id": "EV-COST-002",
+          "owner": "Platform / Finance",
+          "provider": "aws",
+          "resource_ref": "aws://budgets/example-cloud/production-monthly",
+          "scope": "organization/example-cloud",
+          "source_system": "AWS Budgets and Cost Anomaly Detection",
+          "status": "pass",
+          "summary": "Production budgets and anomaly notifications route to accountable owners, and the sampled variance had a documented disposition."
+        }
+      ],
+      "evidence_owners": [
+        "Platform / Finance"
+      ],
+      "evidence_providers": [
+        "aws"
+      ],
+      "evidence_sources": [
+        {
+          "collection_method": "Export budget thresholds, actual and forecast values, subscribers, and alert state.",
+          "name": "AWS budget configuration",
+          "provider": "aws",
+          "system": "AWS Budgets"
+        },
+        {
+          "collection_method": "Export monitors, subscriptions, thresholds, and sampled anomalies.",
+          "name": "AWS cost anomaly configuration",
+          "provider": "aws",
+          "system": "AWS Cost Anomaly Detection"
+        },
+        {
+          "collection_method": "Export scoped budgets, thresholds, notification channels, and current spend.",
+          "name": "Google Cloud budget configuration",
+          "provider": "gcp",
+          "system": "Google Cloud Billing budgets"
+        },
+        {
+          "collection_method": "Link the latest forecast variance review and owner sign-off.",
+          "name": "Forecast review",
+          "provider": "common",
+          "system": "Finance or cost reporting workflow"
+        },
+        {
+          "collection_method": "Sample an anomaly from alert through triage, decision, and closure.",
+          "name": "Cost anomaly response record",
+          "provider": "common",
+          "system": "Incident or ticketing system"
+        }
+      ],
+      "exception_allowed": false,
+      "exception_requirements": [
+        "Monitoring gaps require an incident or maintenance record.",
+        "A temporary manual review must identify an owner and restoration date."
+      ],
+      "exceptions": [],
+      "expected_evidence_providers": [
+        "aws",
+        "gcp",
+        "common"
+      ],
+      "missing_evidence_providers": [
+        "gcp",
+        "common"
+      ],
+      "objective": "Detect material cost variance early enough for accountable teams to respond.",
+      "owner": "Platform / Finance / Service owners",
+      "related_frameworks": [
+        "FinOps practice"
+      ],
+      "requirement": "Material cloud scopes must have budgets or forecasts, cost-anomaly monitoring, routed notifications, and a documented triage path. Alerts must lead to an ownership decision rather than notification-only noise.",
+      "review_cadence": "Monthly",
+      "risk": "Delayed detection of usage spikes, configuration errors, or pricing changes can create avoidable financial impact and undermine planning.",
+      "tags": [
+        "finops",
+        "budgets",
+        "forecasting",
+        "anomaly-detection"
+      ],
+      "test_method": "Sample budget and anomaly configurations plus one recent alert, then confirm thresholds are meaningful, notifications reach an owner, and the variance was investigated.",
+      "title": "Budgets Forecasts And Cost Anomalies Are Reviewed"
+    },
+    {
+      "automation_status": "Partial",
+      "control_id": "MCTC-COST-03",
+      "domain": "FinOps and cost governance",
+      "evidence": [
+        {
+          "collection_date": "2026-09-18",
+          "collection_method": "Reviewed prioritized recommendations against utilization, reliability context, and change records.",
+          "control_id": "MCTC-COST-03",
+          "environment": "production",
+          "evidence_id": "EV-COST-003",
+          "owner": "Platform / Finance / Service owners",
+          "provider": "aws",
+          "resource_ref": "aws://cost-optimization/example-production/recommendations",
+          "scope": "account/example-production",
+          "source_system": "AWS Cost Optimization Hub and Compute Optimizer",
+          "status": "needs_review",
+          "summary": "Low-risk cleanup candidates are approved; a database rightsizing recommendation is deferred pending peak-load validation."
+        }
+      ],
+      "evidence_owners": [
+        "Platform / Finance / Service owners"
+      ],
+      "evidence_providers": [
+        "aws"
+      ],
+      "evidence_sources": [
+        {
+          "collection_method": "Export prioritized recommendations, estimated savings, utilization context, and recommendation state.",
+          "name": "AWS optimization findings",
+          "provider": "aws",
+          "system": "AWS Cost Optimization Hub and Compute Optimizer"
+        },
+        {
+          "collection_method": "Export cost recommendations, impact estimates, resource context, and recommendation state.",
+          "name": "Google Cloud optimization findings",
+          "provider": "gcp",
+          "system": "Google Cloud Recommender"
+        },
+        {
+          "collection_method": "Link utilization, latency, saturation, and availability data for the review window.",
+          "name": "Service utilization and reliability context",
+          "provider": "common",
+          "system": "Observability platform"
+        },
+        {
+          "collection_method": "Record owner, decision, risk, expected savings, validation plan, and rollback path.",
+          "name": "Optimization decision record",
+          "provider": "common",
+          "system": "Ticketing or change-management system"
+        },
+        {
+          "collection_method": "Document coverage, utilization, term, break-even assumptions, and approval.",
+          "name": "Commitment review",
+          "provider": "common",
+          "system": "Finance and platform review"
+        }
+      ],
+      "exception_allowed": true,
+      "exception_requirements": [
+        "Named owner",
+        "Reliability or business justification",
+        "Cost impact estimate",
+        "Review or expiry date"
+      ],
+      "exceptions": [
+        {
+          "approved_by": "Platform and finance reviewer",
+          "compensating_control": "Utilization and latency are monitored, the cost impact is reviewed monthly, and the recommendation remains tracked with an accountable owner.",
+          "control_id": "MCTC-COST-03",
+          "exception_id": "EX-COST-001",
+          "expires_on": "2026-12-31",
+          "owner": "Platform / Finance / Application team",
+          "reason": "Rightsizing is deferred until representative peak-load and failover tests confirm safe capacity thresholds.",
+          "status": "approved",
+          "title": "Synthetic transaction database retains peak-capacity headroom"
+        }
+      ],
+      "expected_evidence_providers": [
+        "aws",
+        "gcp",
+        "common"
+      ],
+      "missing_evidence_providers": [
+        "gcp",
+        "common"
+      ],
+      "objective": "Reduce avoidable spend without trading away required performance, resilience, or recovery capacity.",
+      "owner": "Platform / Finance / Service owners",
+      "related_frameworks": [
+        "FinOps practice"
+      ],
+      "requirement": "Rightsizing, idle-resource removal, storage lifecycle, and commitment recommendations must be reviewed against utilization, service objectives, growth forecasts, failure tolerance, and rollback options before action.",
+      "review_cadence": "Monthly",
+      "risk": "Unreviewed optimization can either leave material waste in place or create capacity, availability, and commitment-risk problems.",
+      "tags": [
+        "finops",
+        "rightsizing",
+        "commitments",
+        "reliability",
+        "unit-economics"
+      ],
+      "test_method": "Sample accepted and deferred recommendations, then confirm decisions include utilization evidence, reliability constraints, savings assumptions, accountable ownership, and post-change validation.",
+      "title": "Cost Optimization Decisions Protect Reliability"
+    },
     {
       "automation_status": "Manual sample",
       "control_id": "MCTC-EVD-01",
@@ -668,6 +960,7 @@
   ],
   "controls_by_domain": {
     "Cloud network exposure": 1,
+    "FinOps and cost governance": 3,
     "Identity and access": 2,
     "Incident response and evidence handling": 1,
     "Infrastructure as code": 1,
@@ -679,6 +972,19 @@
     "Platform": {
       "statuses": {
         "pass": 1
+      },
+      "total": 1
+    },
+    "Platform / Finance": {
+      "statuses": {
+        "needs_review": 1,
+        "pass": 1
+      },
+      "total": 2
+    },
+    "Platform / Finance / Service owners": {
+      "statuses": {
+        "needs_review": 1
       },
       "total": 1
     },
@@ -710,17 +1016,17 @@
   "evidence_by_provider": {
     "aws": {
       "statuses": {
+        "needs_review": 3,
+        "pass": 3
+      },
+      "total": 6
+    },
+    "common": {
+      "statuses": {
         "needs_review": 2,
         "pass": 2
       },
       "total": 4
-    },
-    "common": {
-      "statuses": {
-        "needs_review": 1,
-        "pass": 2
-      },
-      "total": 3
     },
     "gcp": {
       "statuses": {},
@@ -728,11 +1034,11 @@
     }
   },
   "evidence_status": {
-    "needs_review": 3,
-    "pass": 4
+    "needs_review": 5,
+    "pass": 5
   },
   "exception_status": {
-    "approved": 1,
+    "approved": 2,
     "expired": 2
   },
   "expired_exceptions": [
@@ -760,6 +1066,39 @@
     }
   ],
   "provider_coverage_gaps": [
+    {
+      "control_id": "MCTC-COST-01",
+      "evidence_providers": [
+        "common"
+      ],
+      "missing_providers": [
+        "aws",
+        "gcp"
+      ],
+      "title": "Cloud Spend Is Allocated And Owned"
+    },
+    {
+      "control_id": "MCTC-COST-02",
+      "evidence_providers": [
+        "aws"
+      ],
+      "missing_providers": [
+        "gcp",
+        "common"
+      ],
+      "title": "Budgets Forecasts And Cost Anomalies Are Reviewed"
+    },
+    {
+      "control_id": "MCTC-COST-03",
+      "evidence_providers": [
+        "aws"
+      ],
+      "missing_providers": [
+        "gcp",
+        "common"
+      ],
+      "title": "Cost Optimization Decisions Protect Reliability"
+    },
     {
       "control_id": "MCTC-IAM-01",
       "evidence_providers": [
@@ -815,8 +1154,8 @@
   "report_title": "Mock Cloud Trust Controls - Sample Report",
   "review_warnings": [],
   "summary": {
-    "controls_reviewed": 7,
-    "evidence_items": 7,
-    "exceptions": 3
+    "controls_reviewed": 10,
+    "evidence_items": 10,
+    "exceptions": 4
   }
 }

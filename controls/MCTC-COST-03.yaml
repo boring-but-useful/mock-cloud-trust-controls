@@ -1,0 +1,45 @@
+control_id: MCTC-COST-03
+domain: FinOps and cost governance
+title: Cost Optimization Decisions Protect Reliability
+objective: Reduce avoidable spend without trading away required performance, resilience, or recovery capacity.
+requirement: Rightsizing, idle-resource removal, storage lifecycle, and commitment recommendations must be reviewed against utilization, service objectives, growth forecasts, failure tolerance, and rollback options before action.
+risk: Unreviewed optimization can either leave material waste in place or create capacity, availability, and commitment-risk problems.
+evidence_sources:
+  - name: AWS optimization findings
+    provider: aws
+    system: AWS Cost Optimization Hub and Compute Optimizer
+    collection_method: Export prioritized recommendations, estimated savings, utilization context, and recommendation state.
+  - name: Google Cloud optimization findings
+    provider: gcp
+    system: Google Cloud Recommender
+    collection_method: Export cost recommendations, impact estimates, resource context, and recommendation state.
+  - name: Service utilization and reliability context
+    provider: common
+    system: Observability platform
+    collection_method: Link utilization, latency, saturation, and availability data for the review window.
+  - name: Optimization decision record
+    provider: common
+    system: Ticketing or change-management system
+    collection_method: Record owner, decision, risk, expected savings, validation plan, and rollback path.
+  - name: Commitment review
+    provider: common
+    system: Finance and platform review
+    collection_method: Document coverage, utilization, term, break-even assumptions, and approval.
+test_method: Sample accepted and deferred recommendations, then confirm decisions include utilization evidence, reliability constraints, savings assumptions, accountable ownership, and post-change validation.
+owner: Platform / Finance / Service owners
+review_cadence: Monthly
+automation_status: Partial
+exception_allowed: true
+exception_requirements:
+  - Named owner
+  - Reliability or business justification
+  - Cost impact estimate
+  - Review or expiry date
+related_frameworks:
+  - FinOps practice
+tags:
+  - finops
+  - rightsizing
+  - commitments
+  - reliability
+  - unit-economics

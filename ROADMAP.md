@@ -12,9 +12,9 @@ AWS and Google Cloud should usually provide different evidence for the same cont
 
 ## Current Baseline
 
-- Seven YAML control definitions
-- Seven synthetic evidence records
-- Three synthetic exception records
+- Ten YAML control definitions
+- Ten synthetic evidence records
+- Four synthetic exception records
 - Local validation and Markdown, CSV, and JSON report generation
 - Provider-aware evidence provenance and coverage-gap reporting
 - Unit tests for the validator and report generator
@@ -105,6 +105,15 @@ Initial sources:
 - Terraform, source-control, and CI/CD evidence
 
 The fixtures should include passing evidence, review-needed evidence, missing coverage, and time-bound exceptions.
+
+## FinOps Interview-Practice Checkpoint
+
+Status: complete.
+
+- [x] Add provider-neutral controls for allocation and ownership, budgets and anomaly response, and reliability-aware optimization.
+- [x] Add AWS and common synthetic evidence plus an approved capacity-headroom exception.
+- [x] Declare comparable Google Cloud evidence sources without inventing GCP evidence.
+- [x] Document provider mappings, design trade-offs, and a concise interview walkthrough in [FINOPS_CONTROL_GUIDE.md](FINOPS_CONTROL_GUIDE.md).
 
 ## Phase 5 - Add A Google Cloud Vertical Slice
 

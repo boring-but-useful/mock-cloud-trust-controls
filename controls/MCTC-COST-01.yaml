@@ -1,0 +1,40 @@
+control_id: MCTC-COST-01
+domain: FinOps and cost governance
+title: Cloud Spend Is Allocated And Owned
+objective: Make cloud spend attributable to accountable teams, services, and environments.
+requirement: Cloud spend must be assigned to a service or cost owner using billing dimensions, account or project structure, and approved allocation rules. Unallocated and shared costs must be measured, reviewed, and reduced over time.
+risk: Unowned or poorly allocated spend hides waste, weakens forecasts, and makes engineering cost decisions difficult to defend.
+evidence_sources:
+  - name: AWS cost and usage export
+    provider: aws
+    system: AWS Cost and Usage Report
+    collection_method: Export amortized cost by account, service, allocation tag, and billing period.
+  - name: Google Cloud billing export
+    provider: gcp
+    system: Google Cloud Billing export
+    collection_method: Query cost by project, service, labels, and billing period.
+  - name: Service ownership map
+    provider: common
+    system: Service catalog or ownership registry
+    collection_method: Map billing dimensions to accountable teams and services.
+  - name: Unallocated spend report
+    provider: common
+    system: Cost reporting pipeline
+    collection_method: Calculate allocated, shared, and unallocated spend percentages.
+test_method: Review the largest cost categories and a sample of shared costs, then confirm each has an allocation rule, accountable owner, and follow-up path for gaps.
+owner: Platform / Finance / Service owners
+review_cadence: Monthly
+automation_status: Partial
+exception_allowed: true
+exception_requirements:
+  - Named owner
+  - Reason allocation is temporarily unavailable
+  - Compensating allocation method
+  - Remediation date
+related_frameworks:
+  - FinOps practice
+tags:
+  - finops
+  - cost-allocation
+  - ownership
+  - unit-economics
