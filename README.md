@@ -62,10 +62,10 @@ python3 scripts/generate_report.py
 python3 -m unittest discover -s tests
 ```
 
-The validator checks required fields, duplicate IDs, list fields, evidence samples, and exception references. The report generator writes `reports/sample_report.md`.
+The validator checks required fields and types, duplicate IDs, allowed statuses, ISO dates, expired exceptions, evidence samples, and control references. The report generator validates its input before writing `reports/sample_report.md`.
 
-## Planned Next Steps
+## Roadmap And Current Work
 
 The staged implementation plan is maintained in [ROADMAP.md](ROADMAP.md).
 
-The next engineering slice strengthens date and status validation, detects expired exceptions, and makes report generation reject invalid input. Multi-cloud evidence support follows that integrity work.
+The current engineering slice strengthens date and status validation, detects expired exceptions, and makes report generation reject invalid input. Multi-cloud evidence support follows that integrity work.

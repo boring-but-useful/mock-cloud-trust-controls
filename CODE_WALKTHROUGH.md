@@ -204,6 +204,10 @@ For controls, it validates:
 For evidence and exceptions, it validates:
 
 - required fields exist
+- required fields have the expected types
+- statuses use documented values
+- collection and expiry dates use ISO `YYYY-MM-DD` format
+- approved exceptions have not passed their expiry dates
 - IDs are not duplicated
 - each item references a known `control_id`
 
@@ -247,6 +251,7 @@ exceptions_by_control[item.get("control_id", "")].append(item)
 It also calculates:
 
 - evidence status counts
+- exception status counts
 - control counts by domain
 
 Then it builds a Markdown report as a list of strings and writes:
@@ -261,6 +266,7 @@ The report includes:
 - total evidence items
 - total exceptions
 - evidence status summary
+- exception status and expired exception summaries
 - controls by domain
 - per-control detail
 - linked evidence summaries
@@ -295,20 +301,17 @@ The report is generated output, but it is intentionally committed for now becaus
 
 - YAML is used because the controls should be readable as documents and parseable as data.
 - The schema is deliberately simple so the project can grow without a database or API.
-- The validator is strict enough to catch broken references and missing fields.
-- The report generator assumes validation has already passed.
+- The validator catches broken references, missing or mistyped fields, invalid statuses, malformed dates, and stale approved exceptions.
+- The report generator validates its inputs before writing output.
 - The unittest coverage exercises the command-line scripts against a temporary copy of the project, which keeps tests close to real usage.
 - Framework labels are generic, such as `SOC 2 style` and `ISO 27001 style`, until official mappings are verified.
 
 ## Known Limitations
 
-- The report generator does not call the validator before generating output.
-- Evidence statuses are not constrained to an enum yet.
-- Exception dates are not checked for expiry yet.
 - There is no CSV output yet.
 - There are no real cloud integrations yet.
 - There is no separate development requirements file yet.
 
-## Near-Term Next Steps
+## Roadmap And Current Work
 
-The staged implementation plan and its completion criteria live in [ROADMAP.md](ROADMAP.md). The next engineering slice adds stricter date and status validation, expired-exception handling, and validation before report generation.
+The staged implementation plan and its completion criteria live in [ROADMAP.md](ROADMAP.md). The current engineering slice adds stricter date and status validation, expired-exception handling, and validation before report generation.

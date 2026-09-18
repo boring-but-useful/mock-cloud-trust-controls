@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
+import re
 import sys
 
 import yaml
@@ -31,32 +33,53 @@ REQUIRED_CONTROL_FIELDS = {
 }
 
 REQUIRED_EVIDENCE_FIELDS = {
-    "evidence_id",
-    "control_id",
-    "source_system",
-    "collection_method",
-    "collection_date",
-    "owner",
-    "status",
-    "summary",
+    "evidence_id": str,
+    "control_id": str,
+    "source_system": str,
+    "collection_method": str,
+    "collection_date": (str, date),
+    "owner": str,
+    "status": str,
+    "summary": str,
 }
 
 REQUIRED_EXCEPTION_FIELDS = {
-    "exception_id",
-    "control_id",
-    "title",
-    "owner",
-    "reason",
-    "compensating_control",
-    "approved_by",
-    "expires_on",
-    "status",
+    "exception_id": str,
+    "control_id": str,
+    "title": str,
+    "owner": str,
+    "reason": str,
+    "compensating_control": str,
+    "approved_by": str,
+    "expires_on": (str, date),
+    "status": str,
 }
+
+EVIDENCE_STATUSES = {"pass", "needs_review"}
+EXCEPTION_STATUSES = {"approved", "expired"}
+ISO_DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
 def load_yaml(path: Path) -> object:
     with path.open("r", encoding="utf-8") as handle:
         return yaml.safe_load(handle)
+
+
+def expected_type_name(expected_type: type | tuple[type, ...]) -> str:
+    if isinstance(expected_type, tuple):
+        return " or ".join(item.__name__ for item in expected_type)
+    return expected_type.__name__
+
+
+def parse_iso_date(value: object) -> date | None:
+    if type(value) is date:
+        return value
+    if not isinstance(value, str) or not ISO_DATE_PATTERN.fullmatch(value):
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        return None
 
 
 def validate_control(path: Path) -> tuple[dict, list[str]]:
@@ -95,10 +118,13 @@ def validate_control(path: Path) -> tuple[dict, list[str]]:
 
 def validate_reference_items(
     items: list[dict],
-    required_fields: set[str],
+    required_fields: dict[str, type | tuple[type, ...]],
     control_ids: set[str],
     label: str,
     id_field: str,
+    allowed_statuses: set[str],
+    date_field: str,
+    as_of: date,
 ) -> list[str]:
     errors: list[str] = []
     seen_ids: set[str] = set()
@@ -112,6 +138,13 @@ def validate_reference_items(
         for field in missing:
             errors.append(f"{label}[{index}] missing required field '{field}'")
 
+        for field, expected_type in required_fields.items():
+            if field in item and not isinstance(item[field], expected_type):
+                errors.append(
+                    f"{label}[{index}] field '{field}' must be "
+                    f"{expected_type_name(expected_type)}"
+                )
+
         item_id = item.get(id_field)
         if isinstance(item_id, str):
             if item_id in seen_ids:
@@ -122,10 +155,54 @@ def validate_reference_items(
         if control_id not in control_ids:
             errors.append(f"{label}[{index}] references unknown control '{control_id}'")
 
+        status = item.get("status")
+        if isinstance(status, str) and status not in allowed_statuses:
+            allowed = ", ".join(sorted(allowed_statuses))
+            errors.append(
+                f"{label}[{index}] status '{status}' is not allowed; expected one of: {allowed}"
+            )
+
+        parsed_date = parse_iso_date(item.get(date_field))
+        if date_field in item and parsed_date is None:
+            errors.append(
+                f"{label}[{index}] field '{date_field}' must be an ISO date (YYYY-MM-DD)"
+            )
+
+        if label == "exceptions" and parsed_date is not None:
+            if status == "approved" and parsed_date < as_of:
+                errors.append(
+                    f"{label}[{index}] approved exception expired on {parsed_date.isoformat()}; "
+                    "set status to 'expired'"
+                )
+            if status == "expired" and parsed_date >= as_of:
+                errors.append(
+                    f"{label}[{index}] expired exception has not reached its expiry date "
+                    f"{parsed_date.isoformat()}"
+                )
+
     return errors
 
 
-def main() -> int:
+def load_reference_items(
+    path: Path,
+    root_key: str,
+    errors: list[str],
+) -> list[dict]:
+    data = load_yaml(path)
+    if not isinstance(data, dict):
+        errors.append(f"{path.name}: root must be a YAML mapping")
+        return []
+
+    items = data.get(root_key)
+    if not isinstance(items, list):
+        errors.append(f"{path.name}: '{root_key}' must be a list")
+        return []
+
+    return items
+
+
+def validate_project(as_of: date | None = None) -> tuple[dict[str, int], list[str]]:
+    reference_date = as_of or date.today()
     errors: list[str] = []
     controls: list[dict] = []
     control_ids: set[str] = set()
@@ -145,8 +222,7 @@ def main() -> int:
         if control:
             controls.append(control)
 
-    evidence_data = load_yaml(EVIDENCE_FILE)
-    evidence_items = evidence_data.get("evidence_items", []) if isinstance(evidence_data, dict) else []
+    evidence_items = load_reference_items(EVIDENCE_FILE, "evidence_items", errors)
     errors.extend(
         validate_reference_items(
             evidence_items,
@@ -154,11 +230,13 @@ def main() -> int:
             control_ids,
             "evidence_items",
             "evidence_id",
+            EVIDENCE_STATUSES,
+            "collection_date",
+            reference_date,
         )
     )
 
-    exceptions_data = load_yaml(EXCEPTIONS_FILE)
-    exception_items = exceptions_data.get("exceptions", []) if isinstance(exceptions_data, dict) else []
+    exception_items = load_reference_items(EXCEPTIONS_FILE, "exceptions", errors)
     errors.extend(
         validate_reference_items(
             exception_items,
@@ -166,8 +244,22 @@ def main() -> int:
             control_ids,
             "exceptions",
             "exception_id",
+            EXCEPTION_STATUSES,
+            "expires_on",
+            reference_date,
         )
     )
+
+    counts = {
+        "controls": len(controls),
+        "evidence_items": len(evidence_items),
+        "exceptions": len(exception_items),
+    }
+    return counts, errors
+
+
+def main() -> int:
+    counts, errors = validate_project()
 
     if errors:
         print("Validation failed:")
@@ -175,9 +267,9 @@ def main() -> int:
             print(f"- {error}")
         return 1
 
-    print(f"Validated {len(controls)} controls")
-    print(f"Validated {len(evidence_items)} evidence items")
-    print(f"Validated {len(exception_items)} exceptions")
+    print(f"Validated {counts['controls']} controls")
+    print(f"Validated {counts['evidence_items']} evidence items")
+    print(f"Validated {counts['exceptions']} exceptions")
     return 0
 
 
