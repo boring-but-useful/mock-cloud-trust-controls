@@ -45,7 +45,7 @@ Collectors must:
 - keep sanitized fixtures separate from live output
 - run no live calls during imports or tests
 
-See [DESIGN_PRINCIPLES.md](DESIGN_PRINCIPLES.md) for the architectural rules that support these requirements.
+See [DESIGN_PRINCIPLES.md](docs/DESIGN_PRINCIPLES.md) for the architectural rules that support these requirements.
 
 ## Build And Dependency Security
 

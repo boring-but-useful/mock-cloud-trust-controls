@@ -20,21 +20,22 @@ mock_cloud_trust_controls/
 ├── .python-version
 ├── AGENTS.md
 ├── README.md
-├── SPEC.md
-├── CODE_WALKTHROUGH.md
-├── CLOUD_LOGGING_ARCHITECTURE.md
-├── DESIGN_PRINCIPLES.md
-├── FINOPS_CONTROL_GUIDE.md
 ├── LICENSE
 ├── ROADMAP.md
 ├── SECURITY.md
 ├── Makefile
-├── PROVIDER_EVIDENCE_MODEL.md
 ├── requirements.txt
 ├── catalog.md
-├── assets/
-│   ├── cloud_logging_architecture.mmd
-│   └── cloud_logging_architecture.svg
+├── docs/
+│   ├── assets/
+│   │   ├── cloud_logging_architecture.mmd
+│   │   └── cloud_logging_architecture.svg
+│   ├── CLOUD_LOGGING_ARCHITECTURE.md
+│   ├── CODE_WALKTHROUGH.md
+│   ├── DESIGN_PRINCIPLES.md
+│   ├── FINOPS_CONTROL_GUIDE.md
+│   ├── PROVIDER_EVIDENCE_MODEL.md
+│   └── SPEC.md
 ├── controls/
 │   ├── MCTC-EVD-01.yaml
 │   ├── MCTC-COST-01.yaml
@@ -75,7 +76,7 @@ control intent -> requirement -> evidence -> test -> exception -> report
 - One complete multi-cloud logging vertical slice covering generation, routing, retention, delivery health, and queryability
 - Provider-aware provenance, scope, environment, status, ownership, and coverage-gap analysis
 - FinOps evidence for allocation, budgets/anomalies, and reliability-aware optimization
-- A committed [architecture diagram and AWS/GCP walkthrough](CLOUD_LOGGING_ARCHITECTURE.md), with editable Mermaid source and rendered SVG
+- A committed [architecture diagram and AWS/GCP walkthrough](docs/CLOUD_LOGGING_ARCHITECTURE.md), with editable Mermaid source and rendered SVG
 - Python validation plus auditable Markdown, CSV, and JSON report generation
 - Automated tests, report-drift detection, dependency maintenance, CodeQL, secret scanning, and protected-branch CI
 - Generic illustrative framework references; no claim of official framework coverage
@@ -147,10 +148,12 @@ GitHub Actions runs `make verify` for pull requests and pushes to `main`. Depend
 
 ## Security And Design
 
-- [DESIGN_PRINCIPLES.md](DESIGN_PRINCIPLES.md) defines trust boundaries, validation behavior, evidence provenance, least privilege, failure handling, dependency policy, and testing expectations.
-- [CLOUD_LOGGING_ARCHITECTURE.md](CLOUD_LOGGING_ARCHITECTURE.md) diagrams the AWS/GCP evidence paths and compares coverage, routing, retention, integrity, delivery health, cost, and review trade-offs.
-- [FINOPS_CONTROL_GUIDE.md](FINOPS_CONTROL_GUIDE.md) explains allocation, budgets and anomalies, reliability-aware optimization, provider mappings, and review questions.
-- [PROVIDER_EVIDENCE_MODEL.md](PROVIDER_EVIDENCE_MODEL.md) defines provider fields, coverage semantics, the current migration, and deferred collector work.
+- [SPEC.md](docs/SPEC.md) defines the project requirements, data model, validation rules, and acceptance criteria.
+- [CODE_WALKTHROUGH.md](docs/CODE_WALKTHROUGH.md) explains how validation, report generation, and repository components fit together.
+- [DESIGN_PRINCIPLES.md](docs/DESIGN_PRINCIPLES.md) defines trust boundaries, validation behavior, evidence provenance, least privilege, failure handling, dependency policy, and testing expectations.
+- [CLOUD_LOGGING_ARCHITECTURE.md](docs/CLOUD_LOGGING_ARCHITECTURE.md) diagrams the AWS/GCP evidence paths and compares coverage, routing, retention, integrity, delivery health, cost, and review trade-offs.
+- [FINOPS_CONTROL_GUIDE.md](docs/FINOPS_CONTROL_GUIDE.md) explains allocation, budgets and anomalies, reliability-aware optimization, provider mappings, and review questions.
+- [PROVIDER_EVIDENCE_MODEL.md](docs/PROVIDER_EVIDENCE_MODEL.md) defines provider fields, coverage semantics, the current migration, and deferred collector work.
 - [SECURITY.md](SECURITY.md) defines safe reporting, sensitive-data rules, and requirements for future cloud collectors.
 - [AGENTS.md](AGENTS.md) keeps the repository workflow and engineering guardrails durable across future work sessions.
 
@@ -158,7 +161,7 @@ GitHub Actions runs `make verify` for pull requests and pushes to `main`. Depend
 
 The staged implementation plan is maintained in [ROADMAP.md](ROADMAP.md).
 
-The provider-aware evidence model is complete. The next engineering slice deepens the AWS fixtures before adding a Google Cloud logging vertical slice.
+The provider-aware evidence model and AWS/GCP logging vertical slice are complete. The next engineering decision is whether read-only cloud collectors add enough value to justify their credential, API, and abstraction boundaries.
 
 ## License
 
