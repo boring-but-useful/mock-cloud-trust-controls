@@ -26,7 +26,7 @@ Current project state:
 - Python Markdown report generator
 - Unittest coverage for validation and report generation
 - Generated sample report
-- Local git repository on branch `main`
+- Local git repository with `main` as the stable default branch
 - GitHub remote configured as `origin`
 
 ## Goals
@@ -53,6 +53,7 @@ mock_cloud_trust_controls/
 ├── README.md
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
+├── ROADMAP.md
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -311,9 +312,4 @@ git push -u origin short-description
 
 ## Near-Term Roadmap
 
-1. Add richer mock AWS Config, Security Hub, IAM, CloudTrail, and Terraform evidence examples.
-2. Add CSV output for spreadsheet-style review.
-3. Add severity and age fields for vulnerability/configuration findings.
-4. Add report rollups by domain, owner, status, and exception expiry.
-5. Add additional negative validation tests as the schema becomes stricter.
-6. Verify official framework references from primary sources before adding exact mappings.
+See [ROADMAP.md](ROADMAP.md) for the staged implementation plan and completion criteria.

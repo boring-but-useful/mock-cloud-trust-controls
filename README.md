@@ -11,6 +11,7 @@ mock_cloud_trust_controls/
 ├── README.md
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
+├── ROADMAP.md
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -65,7 +66,6 @@ The validator checks required fields, duplicate IDs, list fields, evidence sampl
 
 ## Planned Next Steps
 
-1. Add more realistic mock findings for AWS Config, Security Hub, IAM, and CloudTrail.
-2. Add CSV report output for spreadsheet-style review.
-3. Add severity and status rollups by domain.
-4. Add official framework mappings only after checking current primary sources.
+The staged implementation plan is maintained in [ROADMAP.md](ROADMAP.md).
+
+The next engineering slice strengthens date and status validation, detects expired exceptions, and makes report generation reject invalid input. Multi-cloud evidence support follows that integrity work.

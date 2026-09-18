@@ -23,6 +23,7 @@ mock_cloud_trust_controls/
 ├── README.md
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
+├── ROADMAP.md
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -310,11 +311,4 @@ The report is generated output, but it is intentionally committed for now becaus
 
 ## Near-Term Next Steps
 
-Good next engineering slices:
-
-1. Add CSV report output.
-2. Add richer mock AWS Config, Security Hub, IAM, CloudTrail, and Terraform evidence.
-3. Add finding severity, finding age, owner, and due-date fields.
-4. Add rollups by domain, owner, status, and exception expiry.
-5. Add more negative validation tests as the schema becomes stricter.
-6. Verify exact framework mappings from primary sources before adding official mappings.
+The staged implementation plan and its completion criteria live in [ROADMAP.md](ROADMAP.md). The next engineering slice adds stricter date and status validation, expired-exception handling, and validation before report generation.
