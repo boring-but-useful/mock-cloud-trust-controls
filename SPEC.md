@@ -50,10 +50,13 @@ Current project state:
 
 ```text
 mock_cloud_trust_controls/
+├── AGENTS.md
 ├── README.md
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
+├── DESIGN_PRINCIPLES.md
 ├── ROADMAP.md
+├── SECURITY.md
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -194,6 +197,7 @@ The validator checks:
 - evidence and exception statuses use documented values
 - evidence collection dates and exception expiry dates use ISO `YYYY-MM-DD` format
 - approved exceptions have not passed their expiry dates
+- approved exceptions expiring within 30 days produce a non-blocking review warning
 - evidence records reference known controls
 - exception records reference known controls
 - evidence and exception IDs are duplicate-checked
@@ -231,6 +235,7 @@ The report includes:
 - total controls reviewed
 - total evidence items
 - total exceptions
+- validation warnings
 - evidence status counts
 - exception status counts
 - active exception summary

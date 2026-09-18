@@ -31,10 +31,10 @@ def load_controls() -> list[dict]:
 
 
 def main() -> int:
-    _, validation_errors = validate_project()
-    if validation_errors:
+    validation = validate_project()
+    if not validation.is_valid:
         print("Report generation stopped because validation failed:")
-        for error in validation_errors:
+        for error in validation.errors:
             print(f"- {error}")
         return 1
 
@@ -70,9 +70,20 @@ def main() -> int:
         f"- Evidence items: {len(evidence_items)}",
         f"- Exceptions: {len(exception_items)}",
         "",
-        "## Evidence Status",
+        "## Review Warnings",
         "",
     ]
+
+    for warning in validation.warnings:
+        lines.append(f"- {warning}")
+    if not validation.warnings:
+        lines.append("- No validation warnings.")
+
+    lines.extend([
+        "",
+        "## Evidence Status",
+        "",
+    ])
 
     for status, count in sorted(status_counts.items()):
         lines.append(f"- {status}: {count}")

@@ -8,10 +8,13 @@ The project starts with readable YAML control definitions, mock evidence, except
 
 ```text
 mock_cloud_trust_controls/
+├── AGENTS.md
 ├── README.md
 ├── SPEC.md
 ├── CODE_WALKTHROUGH.md
+├── DESIGN_PRINCIPLES.md
 ├── ROADMAP.md
+├── SECURITY.md
 ├── requirements.txt
 ├── catalog.md
 ├── controls/
@@ -62,7 +65,13 @@ python3 scripts/generate_report.py
 python3 -m unittest discover -s tests
 ```
 
-The validator checks required fields and types, duplicate IDs, allowed statuses, ISO dates, expired exceptions, evidence samples, and control references. The report generator validates its input before writing `reports/sample_report.md`.
+The validator checks required fields and types, duplicate IDs, allowed statuses, ISO dates, expired exceptions, evidence samples, and control references. Valid but time-sensitive conditions are emitted as non-blocking review warnings. The report generator validates its input before writing `reports/sample_report.md`.
+
+## Security And Design
+
+- [DESIGN_PRINCIPLES.md](DESIGN_PRINCIPLES.md) defines trust boundaries, validation behavior, evidence provenance, least privilege, failure handling, dependency policy, and testing expectations.
+- [SECURITY.md](SECURITY.md) defines safe reporting, sensitive-data rules, and requirements for future cloud collectors.
+- [AGENTS.md](AGENTS.md) keeps the repository workflow and engineering guardrails durable across future work sessions.
 
 ## Roadmap And Current Work
 

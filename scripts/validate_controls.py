@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 import re
@@ -58,6 +59,18 @@ REQUIRED_EXCEPTION_FIELDS = {
 EVIDENCE_STATUSES = {"pass", "needs_review"}
 EXCEPTION_STATUSES = {"approved", "expired"}
 ISO_DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+EXCEPTION_EXPIRY_WARNING_DAYS = 30
+
+
+@dataclass(frozen=True)
+class ValidationResult:
+    counts: dict[str, int]
+    errors: tuple[str, ...]
+    warnings: tuple[str, ...]
+
+    @property
+    def is_valid(self) -> bool:
+        return not self.errors
 
 
 def load_yaml(path: Path) -> object:
@@ -125,8 +138,9 @@ def validate_reference_items(
     allowed_statuses: set[str],
     date_field: str,
     as_of: date,
-) -> list[str]:
+) -> tuple[list[str], list[str]]:
     errors: list[str] = []
+    warnings: list[str] = []
     seen_ids: set[str] = set()
 
     for index, item in enumerate(items, start=1):
@@ -174,13 +188,25 @@ def validate_reference_items(
                     f"{label}[{index}] approved exception expired on {parsed_date.isoformat()}; "
                     "set status to 'expired'"
                 )
+            if status == "approved" and parsed_date >= as_of:
+                days_remaining = (parsed_date - as_of).days
+                if days_remaining <= EXCEPTION_EXPIRY_WARNING_DAYS:
+                    timing = (
+                        "today"
+                        if days_remaining == 0
+                        else f"in {days_remaining} days"
+                    )
+                    warnings.append(
+                        f"{label}[{index}] approved exception expires {timing} "
+                        f"on {parsed_date.isoformat()}"
+                    )
             if status == "expired" and parsed_date >= as_of:
                 errors.append(
                     f"{label}[{index}] expired exception has not reached its expiry date "
                     f"{parsed_date.isoformat()}"
                 )
 
-    return errors
+    return errors, warnings
 
 
 def load_reference_items(
@@ -201,9 +227,10 @@ def load_reference_items(
     return items
 
 
-def validate_project(as_of: date | None = None) -> tuple[dict[str, int], list[str]]:
+def validate_project(as_of: date | None = None) -> ValidationResult:
     reference_date = as_of or date.today()
     errors: list[str] = []
+    warnings: list[str] = []
     controls: list[dict] = []
     control_ids: set[str] = set()
 
@@ -223,53 +250,58 @@ def validate_project(as_of: date | None = None) -> tuple[dict[str, int], list[st
             controls.append(control)
 
     evidence_items = load_reference_items(EVIDENCE_FILE, "evidence_items", errors)
-    errors.extend(
-        validate_reference_items(
-            evidence_items,
-            REQUIRED_EVIDENCE_FIELDS,
-            control_ids,
-            "evidence_items",
-            "evidence_id",
-            EVIDENCE_STATUSES,
-            "collection_date",
-            reference_date,
-        )
+    evidence_errors, evidence_warnings = validate_reference_items(
+        evidence_items,
+        REQUIRED_EVIDENCE_FIELDS,
+        control_ids,
+        "evidence_items",
+        "evidence_id",
+        EVIDENCE_STATUSES,
+        "collection_date",
+        reference_date,
     )
+    errors.extend(evidence_errors)
+    warnings.extend(evidence_warnings)
 
     exception_items = load_reference_items(EXCEPTIONS_FILE, "exceptions", errors)
-    errors.extend(
-        validate_reference_items(
-            exception_items,
-            REQUIRED_EXCEPTION_FIELDS,
-            control_ids,
-            "exceptions",
-            "exception_id",
-            EXCEPTION_STATUSES,
-            "expires_on",
-            reference_date,
-        )
+    exception_errors, exception_warnings = validate_reference_items(
+        exception_items,
+        REQUIRED_EXCEPTION_FIELDS,
+        control_ids,
+        "exceptions",
+        "exception_id",
+        EXCEPTION_STATUSES,
+        "expires_on",
+        reference_date,
     )
+    errors.extend(exception_errors)
+    warnings.extend(exception_warnings)
 
     counts = {
         "controls": len(controls),
         "evidence_items": len(evidence_items),
         "exceptions": len(exception_items),
     }
-    return counts, errors
+    return ValidationResult(counts, tuple(errors), tuple(warnings))
 
 
 def main() -> int:
-    counts, errors = validate_project()
+    result = validate_project()
 
-    if errors:
+    if not result.is_valid:
         print("Validation failed:")
-        for error in errors:
+        for error in result.errors:
             print(f"- {error}")
         return 1
 
-    print(f"Validated {counts['controls']} controls")
-    print(f"Validated {counts['evidence_items']} evidence items")
-    print(f"Validated {counts['exceptions']} exceptions")
+    if result.warnings:
+        print("Validation warnings:")
+        for warning in result.warnings:
+            print(f"- {warning}")
+
+    print(f"Validated {result.counts['controls']} controls")
+    print(f"Validated {result.counts['evidence_items']} evidence items")
+    print(f"Validated {result.counts['exceptions']} exceptions")
     return 0
 
 

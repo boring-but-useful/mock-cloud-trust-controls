@@ -6,7 +6,7 @@ exceptions:
     reason: A restricted emergency user is retained for account recovery testing.
     compensating_control: Credentials are vaulted, MFA is enforced, and use is monitored.
     approved_by: Security reviewer
-    expires_on: 2099-10-15
+    expires_on: 2027-09-18
     status: approved
   - exception_id: EX-NET-001
     control_id: MCTC-NET-01

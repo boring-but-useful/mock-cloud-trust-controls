@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import date, timedelta
 import shutil
 import subprocess
 import sys
@@ -128,6 +129,50 @@ class ValidateControlsTests(unittest.TestCase):
                 "approved exception expired on 2000-01-01; set status to 'expired'",
                 result.stdout,
             )
+
+    def test_validate_controls_warns_for_exception_expiring_soon(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            project_copy = copy_project(Path(tmp_dir))
+            exceptions_path = project_copy / "examples" / "mock_exceptions.yaml"
+            exceptions = load_yaml(exceptions_path)
+            expires_on = date.today() + timedelta(days=10)
+            exceptions["exceptions"][0]["expires_on"] = expires_on.isoformat()
+            exceptions["exceptions"][0]["status"] = "approved"
+            write_yaml(exceptions_path, exceptions)
+
+            result = run_validator(project_copy)
+
+            self.assertEqual(result.returncode, 0)
+            self.assertIn("Validation warnings:", result.stdout)
+            self.assertIn(
+                f"approved exception expires in 10 days on {expires_on.isoformat()}",
+                result.stdout,
+            )
+            self.assertIn("Validated 3 exceptions", result.stdout)
+
+    def test_exception_expiry_warning_window_boundaries(self) -> None:
+        for days_remaining, warning_expected in ((0, True), (30, True), (31, False)):
+            with self.subTest(days_remaining=days_remaining):
+                with tempfile.TemporaryDirectory() as tmp_dir:
+                    project_copy = copy_project(Path(tmp_dir))
+                    exceptions_path = (
+                        project_copy / "examples" / "mock_exceptions.yaml"
+                    )
+                    exceptions = load_yaml(exceptions_path)
+                    expires_on = date.today() + timedelta(days=days_remaining)
+                    exceptions["exceptions"][0]["expires_on"] = (
+                        expires_on.isoformat()
+                    )
+                    exceptions["exceptions"][0]["status"] = "approved"
+                    write_yaml(exceptions_path, exceptions)
+
+                    result = run_validator(project_copy)
+
+                    self.assertEqual(result.returncode, 0)
+                    if warning_expected:
+                        self.assertIn("Validation warnings:", result.stdout)
+                    else:
+                        self.assertNotIn("Validation warnings:", result.stdout)
 
     def test_validate_controls_rejects_invalid_evidence_root(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:

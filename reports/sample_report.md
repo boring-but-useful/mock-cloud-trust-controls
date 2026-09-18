@@ -8,6 +8,10 @@ This report is generated from mock controls, evidence, and exception data. It is
 - Evidence items: 7
 - Exceptions: 3
 
+## Review Warnings
+
+- No validation warnings.
+
 ## Evidence Status
 
 - needs_review: 3
@@ -20,7 +24,7 @@ This report is generated from mock controls, evidence, and exception data. It is
 
 ## Active Exceptions
 
-- EX-IAM-001 (MCTC-IAM-02, expires 2099-10-15): Break-glass IAM user retained for recovery testing
+- EX-IAM-001 (MCTC-IAM-02, expires 2027-09-18): Break-glass IAM user retained for recovery testing
 
 ## Expired Exceptions
 
@@ -96,7 +100,7 @@ Evidence:
 - EV-IAM-002 (needs_review): Central authentication is in place; one break-glass account requires recurring review evidence.
 
 Exceptions:
-- EX-IAM-001 (approved, expires 2099-10-15): Break-glass IAM user retained for recovery testing
+- EX-IAM-001 (approved, expires 2027-09-18): Break-glass IAM user retained for recovery testing
 
 ### MCTC-LOG-01: Cloud Audit Logs Are Enabled And Retained
 
