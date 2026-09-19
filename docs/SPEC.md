@@ -17,7 +17,7 @@ It does not copy employer control language, use production data, or claim offici
 Current project state:
 
 - 10 YAML control definitions
-- 10 mock evidence records
+- 17 mock evidence records
 - 4 mock exception records
 - Markdown control catalog
 - Readable code walkthrough
@@ -25,13 +25,13 @@ Current project state:
 - Python validation script
 - Python Markdown, CSV, and JSON report generator
 - Provider-aware evidence records and coverage-gap reporting
-- Unittest coverage for validation and report generation
+- Unittest coverage for validation, documentation links, and report generation
 - Command-line support for reproducible review dates, strict warnings, and custom report paths
 - Controlled YAML and file-loading errors
 - Atomic report writes
 - One-command local verification through `make verify`
 - GitHub Actions verification and weekly Dependabot checks
-- Generated sample report
+- Generated Markdown, CSV, and JSON sample reports
 - Local git repository with `main` as the stable default branch
 - GitHub remote configured as `origin`
 
@@ -96,9 +96,11 @@ mock_cloud_trust_controls/
 │   ├── sample_report.json
 │   └── sample_report.md
 ├── scripts/
+│   ├── check_markdown_links.py
 │   ├── generate_report.py
 │   └── validate_controls.py
 └── tests/
+    ├── test_check_markdown_links.py
     ├── test_generate_report.py
     └── test_validate_controls.py
 ```
@@ -246,6 +248,14 @@ Validated 17 evidence items
 Validated 4 exceptions
 ```
 
+Local Markdown links are checked separately with:
+
+```bash
+python3 scripts/check_markdown_links.py
+```
+
+The check rejects missing inline document or image targets and local paths that escape the repository. External URLs and same-page fragments are not resolved.
+
 ## Report Generation
 
 Run from the project root:
@@ -315,6 +325,7 @@ python3 -m unittest discover -s tests
 
 The tests copy the project into a temporary directory, run the command-line scripts against that copy, and verify:
 
+- local Markdown links accept valid files and reject missing or escaping targets
 - validation passes for the current project data
 - validation reports a missing required control field
 - report generation writes the expected Markdown output

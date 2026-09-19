@@ -147,7 +147,7 @@ Completed scope:
 - [x] Add sink-health metrics and a timestamped central audit-log query.
 - [x] Document provider-specific behavior and make AWS, GCP, and common coverage complete for `MCTC-LOG-01`.
 
-Then add:
+Possible later evidence expansions (deferred; not part of the current collector decision):
 
 1. IAM policies, service accounts, and central human access
 2. VPC firewall rules and public-resource exposure

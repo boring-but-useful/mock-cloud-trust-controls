@@ -55,9 +55,11 @@ mock_cloud_trust_controls/
 │   ├── sample_report.json
 │   └── sample_report.md
 ├── scripts/
+│   ├── check_markdown_links.py
 │   ├── generate_report.py
 │   └── validate_controls.py
 └── tests/
+    ├── test_check_markdown_links.py
     ├── test_generate_report.py
     └── test_validate_controls.py
 ```
@@ -102,12 +104,13 @@ make verify
 
 On Debian or Ubuntu, install the distribution's `python3-venv` package first if virtual-environment creation reports that `ensurepip` is unavailable.
 
-`make verify` runs current-date strict validation, regenerates all sample reports using the deterministic `SAMPLE_AS_OF` date, checks the committed reports for drift, and runs the complete test suite.
+`make verify` runs current-date strict validation, checks local Markdown links, regenerates all sample reports using the deterministic `SAMPLE_AS_OF` date, checks the committed reports for drift, and runs the complete test suite.
 
 Individual commands remain available:
 
 ```bash
 make validate
+make docs
 make report
 make test
 ```
