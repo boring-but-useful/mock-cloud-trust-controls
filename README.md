@@ -13,56 +13,32 @@ This project was developed with AI-assisted tooling for research, design explora
 ## Project Structure
 
 ```text
-mock_cloud_trust_controls/
+mock-cloud-trust-controls/
 ├── .github/
 │   ├── dependabot.yml
-│   └── workflows/verify.yml
+│   └── workflows/
+│       ├── dependency-review.yml
+│       └── verify.yml
+├── controls/         # YAML control definitions
+├── docs/
+│   └── assets/       # architecture source and rendered diagram
+├── examples/         # synthetic evidence and exceptions
+├── reports/          # sample Markdown, CSV, and JSON output
+├── scripts/          # validation, report generation, link checks
+├── tests/
+├── .gitignore
 ├── .python-version
 ├── AGENTS.md
-├── README.md
-├── LICENSE
-├── ROADMAP.md
-├── SECURITY.md
-├── Makefile
-├── requirements.txt
 ├── catalog.md
-├── docs/
-│   ├── assets/
-│   │   ├── cloud_logging_architecture.mmd
-│   │   └── cloud_logging_architecture.svg
-│   ├── CLOUD_LOGGING_ARCHITECTURE.md
-│   ├── CODE_WALKTHROUGH.md
-│   ├── DESIGN_PRINCIPLES.md
-│   ├── FINOPS_CONTROL_GUIDE.md
-│   ├── PROVIDER_EVIDENCE_MODEL.md
-│   └── SPEC.md
-├── controls/
-│   ├── MCTC-EVD-01.yaml
-│   ├── MCTC-COST-01.yaml
-│   ├── MCTC-COST-02.yaml
-│   ├── MCTC-COST-03.yaml
-│   ├── MCTC-IAC-01.yaml
-│   ├── MCTC-IAM-01.yaml
-│   ├── MCTC-IAM-02.yaml
-│   ├── MCTC-LOG-01.yaml
-│   ├── MCTC-NET-01.yaml
-│   └── MCTC-VULN-01.yaml
-├── examples/
-│   ├── mock_evidence.yaml
-│   └── mock_exceptions.yaml
-├── reports/
-│   ├── sample_report.csv
-│   ├── sample_report.json
-│   └── sample_report.md
-├── scripts/
-│   ├── check_markdown_links.py
-│   ├── generate_report.py
-│   └── validate_controls.py
-└── tests/
-    ├── test_check_markdown_links.py
-    ├── test_generate_report.py
-    └── test_validate_controls.py
+├── LICENSE
+├── Makefile
+├── README.md
+├── requirements.txt
+├── ROADMAP.md
+└── SECURITY.md
 ```
+
+The [control catalog](catalog.md) lists the individual definitions; the design guides are linked under Security And Design below.
 
 ## Control Flow
 
