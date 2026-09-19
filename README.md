@@ -147,7 +147,7 @@ Markdown is the default human review document. CSV is a flat, one-row-per-contro
 
 The report generator validates its input before writing and replaces the destination atomically, preserving the previous report if validation or writing fails. All three formats use only the Python standard library beyond the project's existing YAML dependency.
 
-GitHub Actions runs `make verify` for pull requests and pushes to `main`. Dependabot checks the pinned Python dependency and pinned GitHub Actions weekly.
+GitHub Actions runs `make verify` for pull requests, pushes to `main`, a weekly UTC schedule, and manual dispatches. The scheduled run surfaces time-dependent exception warnings or failures even when the repository is otherwise quiet. Dependabot checks the pinned Python dependency and pinned GitHub Actions weekly.
 
 ## Security And Design
 
