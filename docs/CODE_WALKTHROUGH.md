@@ -60,9 +60,11 @@ mock_cloud_trust_controls/
 │   ├── sample_report.json
 │   └── sample_report.md
 ├── scripts/
+│   ├── check_markdown_links.py
 │   ├── generate_report.py
 │   └── validate_controls.py
 └── tests/
+    ├── test_check_markdown_links.py
     ├── test_generate_report.py
     └── test_validate_controls.py
 ```
@@ -179,7 +181,7 @@ Each exception has:
 
 The important link is also `control_id`. Exceptions are grouped under the relevant control in the generated report.
 
-Current exceptions are all synthetic and approved. They cover break-glass access, temporary public exposure, and a dependency finding awaiting an upstream patch.
+All current exceptions are synthetic. Two are active and approved, and two are retained as expired examples. They cover break-glass access, temporary public exposure, a dependency finding awaiting an upstream patch, and intentional database capacity headroom.
 
 ## Validator
 
@@ -249,6 +251,22 @@ For evidence and exceptions, it validates:
 If anything fails, the validator prints every error and returns exit code `1`. If everything passes, it prints the counts and returns `0`.
 
 `--as-of` makes time-based review behavior reproducible. `--strict-warnings` changes an otherwise successful warning result into exit code `1` for CI and policy enforcement.
+
+## Documentation Link Checker
+
+The documentation checker is:
+
+```text
+scripts/check_markdown_links.py
+```
+
+Run it directly or through the Make target:
+
+```bash
+make docs
+```
+
+It checks inline local document and image targets, including relative paths and fragments. External URLs and same-page fragments are left to their respective hosts and Markdown renderers. Missing local files and paths that escape the repository fail verification. The checker uses only the Python standard library and is included in `make verify`.
 
 ## Report Generator
 
@@ -415,4 +433,4 @@ The GCP baseline follows current official guidance for audit-log types, explicit
 
 The staged implementation plan and its completion criteria live in [ROADMAP.md](../ROADMAP.md). The provider-aware evidence model is documented in [PROVIDER_EVIDENCE_MODEL.md](PROVIDER_EVIDENCE_MODEL.md). The AWS/GCP logging vertical slice is complete; the next decision is whether optional read-only collectors justify their credential, API, and abstraction boundaries.
 
-The hardening checkpoint also adds a one-command `make verify` workflow, GitHub Actions verification, exact dependency pinning, weekly Dependabot checks, reproducible date options, strict warning mode, controlled input errors, and atomic report writes.
+The hardening checkpoint also adds a one-command `make verify` workflow, local Markdown-link checking, GitHub Actions verification, exact dependency pinning, weekly Dependabot checks, reproducible date options, strict warning mode, controlled input errors, and atomic report writes.

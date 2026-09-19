@@ -15,7 +15,7 @@ From the repository root:
 make verify
 ```
 
-`make verify` uses strict warnings, checks generated-report drift, and runs all tests. Use the individual Python commands only when diagnosing one stage.
+`make verify` uses strict warnings, checks local Markdown links and generated-report drift, and runs all tests. Use the individual Python commands only when diagnosing one stage.
 
 ## Security Rules
 
